@@ -11,7 +11,7 @@ const MAX_LIMIT = 50;
 
 export const listRatingsInput = {
   entity_type: entityTypeSchema.describe("The kind of entity to browse: protocol, chain, token, oracle, vault, organisation, or bridge."),
-  category: z.string().optional().describe("Optional category filter, e.g. 'Lending' or 'DEX/Trading'."),
+  category: z.string().optional().describe("Optional category filter, lowercase, e.g. 'lending'."),
   chain: z.string().optional().describe("Optional chain filter by chain slug, e.g. 'ethereum' or 'base'."),
   limit: z.number().int().positive().max(MAX_LIMIT).optional().describe(`Max results (default ${DEFAULT_LIMIT}, cap ${MAX_LIMIT}).`),
 } as const;
@@ -20,7 +20,7 @@ export const listRatingsMeta = {
   name: "list_ratings",
   title: "List / browse Verdict ratings",
   description:
-    "Browse Verdict's DeFi ratings for one entity type, optionally filtered by category or chain. Returns entities with their letter grade + composite score, best-rated first. Example: list_ratings({ entity_type: 'protocol', category: 'Lending' }).",
+    "Browse Verdict's DeFi ratings for one entity type, optionally filtered by category or chain. Returns entities with their letter grade + composite score, best-rated first. Example: list_ratings({ entity_type: 'protocol', category: 'lending' }).",
 };
 
 export async function listRatings(

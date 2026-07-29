@@ -24,6 +24,15 @@ describe("HttpVerdictClient error mapping", () => {
     expect(url).toBe("https://example.test/api/v1/protocols?search=aave&limit=5");
   });
 
+  it("lowercases the category filter on the wire", async () => {
+    const fetchMock = mockFetch(200, { items: [] });
+    vi.stubGlobal("fetch", fetchMock);
+    const c = new HttpVerdictClient({ base: "https://example.test/api/v1" });
+    await c.listEntities("protocol", { category: "Lending" });
+    const url = fetchMock.mock.calls[0][0] as string;
+    expect(url).toContain("category=lending");
+  });
+
   it("maps 404 to not_found", async () => {
     vi.stubGlobal("fetch", mockFetch(404, { detail: "not found" }));
     const c = new HttpVerdictClient({ base: "https://x.test" });

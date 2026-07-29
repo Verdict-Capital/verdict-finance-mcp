@@ -74,7 +74,7 @@ export class HttpVerdictClient implements VerdictClient {
   async listEntities(type: EntityType, params: ListParams = {}): Promise<EntityRecord[]> {
     const qs = new URLSearchParams();
     if (params.search) qs.set("search", params.search);
-    if (params.category) qs.set("category", params.category);
+    if (params.category) qs.set("category", params.category.toLowerCase());
     if (params.chain) qs.set("chain", params.chain);
     qs.set("limit", String(params.limit ?? 25));
     const body = await this.get<{ items?: EntityRecord[] }>(`/${pluralOf(type)}?${qs.toString()}`);
