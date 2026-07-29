@@ -46,6 +46,8 @@ export interface EntityRecord {
 export interface Rating {
   letter_grade: string | null;
   composite_score: number | null;
+  largest_drag_hint: string | null;
+  has_unrated_dependencies: boolean;
 }
 
 export interface ListParams {
@@ -94,6 +96,8 @@ export class HttpVerdictClient implements VerdictClient {
     return {
       letter_grade: latest.letter_grade ?? null,
       composite_score: latest.composite_score ?? null,
+      largest_drag_hint: latest.largest_drag_hint ?? null,
+      has_unrated_dependencies: latest.has_unrated_dependencies ?? false,
     };
   }
 

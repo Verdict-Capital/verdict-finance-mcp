@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { EntityType } from "../entities.js";
 import { VerdictError, type VerdictClient } from "../client.js";
-import { attribution, deepLink, formatItem, toRatingItem } from "../format.js";
+import { attribution, deepLink, detailLines, formatItem, toRatingItem } from "../format.js";
 import { textResult, errorResult, friendlyError, type ToolResult } from "../respond.js";
 import { entityTypeSchema } from "../schema.js";
 
@@ -26,8 +26,8 @@ export async function getRating(
     const entity = await client.getEntity(entity_type, identifier);
     const rating = await client.getLatestRating(entity_type, entity.id);
     const item = toRatingItem(entity_type, entity, rating);
-    const line = formatItem(item, { categories: true });
-    return textResult(`${line}\n\n${attribution(deepLink(entity_type, entity.slug))}`);
+    const body = [formatItem(item, { categories: true }), ...detailLines(item)].join("\n");
+    return textResult(`${body}\n\n${attribution(deepLink(entity_type, entity.slug))}`);
   } catch (err) {
     if (err instanceof VerdictError && err.kind === "not_found") {
       return textResult(

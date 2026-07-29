@@ -5,6 +5,7 @@ import {
   formatItem,
   toRatingItem,
   byGradeDesc,
+  detailLines,
   type RatingItem,
 } from "../src/format.js";
 
@@ -37,6 +38,8 @@ describe("formatItem", () => {
     composite: 87,
     chains: ["ethereum", "base"],
     categories: ["Lending"],
+    dragHint: null,
+    hasUnratedDeps: false,
   };
 
   it("renders a rated item with grade, score, chains and link", () => {
@@ -84,12 +87,35 @@ describe("toRatingItem", () => {
   });
 });
 
+describe("detailLines", () => {
+  const base: RatingItem = {
+    name: "Aave V4", entityType: "protocol", slug: "aave",
+    grade: "BBB", composite: 77.51, chains: ["Ethereum"], categories: ["lending"],
+    dragHint: null, hasUnratedDeps: false,
+  };
+  it("is empty when there is no drag information", () => {
+    expect(detailLines(base)).toEqual([]);
+  });
+  it("renders the drag hint", () => {
+    expect(detailLines({ ...base, dragHint: "chain: ethereum" }))
+      .toEqual(["Dependency drag: chain: ethereum"]);
+  });
+  it("renders the unrated-dependencies note", () => {
+    expect(detailLines({ ...base, hasUnratedDeps: true }))
+      .toEqual(["Note: some dependencies are not yet rated."]);
+  });
+  it("renders hint first when both apply", () => {
+    expect(detailLines({ ...base, dragHint: "oracle: pyth", hasUnratedDeps: true }))
+      .toEqual(["Dependency drag: oracle: pyth", "Note: some dependencies are not yet rated."]);
+  });
+});
+
 describe("byGradeDesc", () => {
   it("sorts rated (higher composite) before unrated", () => {
     const items: RatingItem[] = [
-      { name: "Z", entityType: "protocol", slug: "z", grade: null, composite: null, chains: [], categories: [] },
-      { name: "A", entityType: "protocol", slug: "a", grade: "B", composite: 70, chains: [], categories: [] },
-      { name: "B", entityType: "protocol", slug: "b", grade: "A", composite: 90, chains: [], categories: [] },
+      { name: "Z", entityType: "protocol", slug: "z", grade: null, composite: null, chains: [], categories: [], dragHint: null, hasUnratedDeps: false },
+      { name: "A", entityType: "protocol", slug: "a", grade: "B", composite: 70, chains: [], categories: [], dragHint: null, hasUnratedDeps: false },
+      { name: "B", entityType: "protocol", slug: "b", grade: "A", composite: 90, chains: [], categories: [], dragHint: null, hasUnratedDeps: false },
     ];
     const sorted = [...items].sort(byGradeDesc).map((i) => i.name);
     expect(sorted).toEqual(["B", "A", "Z"]);

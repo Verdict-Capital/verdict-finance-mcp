@@ -69,6 +69,8 @@ describe("HttpVerdictClient error mapping", () => {
     await expect(c.getLatestRating("protocol", "id-1")).resolves.toEqual({
       letter_grade: "AA",
       composite_score: 91.2,
+      largest_drag_hint: null,
+      has_unrated_dependencies: false,
     });
 
     vi.stubGlobal("fetch", mockFetch(200, { items: [], total: 0 }));

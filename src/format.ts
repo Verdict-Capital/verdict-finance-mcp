@@ -15,6 +15,8 @@ export interface RatingItem {
   composite: number | null;
   chains: string[];
   categories: string[];
+  dragHint: string | null;
+  hasUnratedDeps: boolean;
 }
 
 /**
@@ -41,7 +43,20 @@ export function toRatingItem(
     composite: rating?.composite_score ?? null,
     chains,
     categories: entity.categories ?? [],
+    dragHint: rating?.largest_drag_hint ?? null,
+    hasUnratedDeps: rating?.has_unrated_dependencies ?? false,
   };
+}
+
+/**
+ * Extra provenance lines for a single-entity view. The headline shows one
+ * public grade; these lines say what dependency drag shaped it.
+ */
+export function detailLines(item: RatingItem): string[] {
+  const lines: string[] = [];
+  if (item.dragHint) lines.push(`Dependency drag: ${item.dragHint}`);
+  if (item.hasUnratedDeps) lines.push("Note: some dependencies are not yet rated.");
+  return lines;
 }
 
 /** "A (87/100)" | "A" | "(87/100)" | "unrated" */

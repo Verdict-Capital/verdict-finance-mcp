@@ -22,6 +22,15 @@ describe("get_rating", () => {
     expect(r.isError).toBeFalsy();
   });
 
+  it("includes the drag line when the scorecard carries one", async () => {
+    const c = new FakeClient();
+    c.entities.protocol = [entity({ id: "p1", name: "Aave V4", slug: "aave", chains: [{ name: "Ethereum" }], categories: ["lending"] })];
+    c.ratings.p1 = { letter_grade: "AA", composite_score: 88.2, largest_drag_hint: "chain: ethereum", has_unrated_dependencies: false };
+    const r = await getRating(c, { entity_type: "protocol", identifier: "aave" });
+    const t = text(r);
+    expect(t).toContain("Dependency drag: chain: ethereum");
+  });
+
   it("renders 'unrated' for an entity with no published scorecard", async () => {
     const c = new FakeClient();
     c.entities.token = [entity({ id: "t1", name: "New Token", slug: "new-token" })];
