@@ -4,7 +4,7 @@ import type { EntityType } from "./entities.js";
 import type { EntityRecord, Rating } from "./client.js";
 
 const SITE = "https://www.verdict.finance";
-const RATINGS = `${SITE}/ratings`;
+const RATINGS = `${SITE}/products/ratings`;
 
 /** A single entity merged with its latest rating, ready to render. */
 export interface RatingItem {
@@ -18,12 +18,11 @@ export interface RatingItem {
 }
 
 /**
- * Per-entity deep link. Card ids on the ratings page are `<type>-<slug>`
- * (e.g. `protocol-aave-v3`); the page consumes `?search=` to scope + expand
- * that card (Spec 1 auto-expand wiring). Matches the spec's canonical form.
+ * Per-entity deep link. The ratings page routes a `#{type}-{slug}` hash to the
+ * matching entity tab and scrolls to the live ratings section.
  */
 export function deepLink(entityType: EntityType, slug: string): string {
-  return `${RATINGS}?search=${entityType}-${slug}`;
+  return `${RATINGS}#${entityType}-${slug}`;
 }
 
 export function toRatingItem(

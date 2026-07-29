@@ -9,9 +9,9 @@ import {
 } from "../src/format.js";
 
 describe("deepLink", () => {
-  it("builds the ?search=<type>-<slug> ratings link", () => {
+  it("builds the #<type>-<slug> ratings link", () => {
     expect(deepLink("protocol", "aave-v3")).toBe(
-      "https://www.verdict.finance/ratings?search=protocol-aave-v3",
+      "https://www.verdict.finance/products/ratings#protocol-aave-v3",
     );
   });
 });
@@ -24,7 +24,7 @@ describe("attribution", () => {
     );
   });
   it("defaults to the ratings page when no link is given", () => {
-    expect(attribution()).toContain("https://www.verdict.finance/ratings ·");
+    expect(attribution()).toContain("https://www.verdict.finance/products/ratings ·");
   });
 });
 
@@ -41,7 +41,7 @@ describe("formatItem", () => {
 
   it("renders a rated item with grade, score, chains and link", () => {
     expect(formatItem(base)).toBe(
-      "Aave V3 — A (87/100) · protocol · chains: ethereum, base · https://www.verdict.finance/ratings?search=protocol-aave-v3",
+      "Aave V3 — A (87/100) · protocol · chains: ethereum, base · https://www.verdict.finance/products/ratings#protocol-aave-v3",
     );
   });
 

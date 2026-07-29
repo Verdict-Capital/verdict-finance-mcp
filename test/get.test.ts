@@ -17,7 +17,7 @@ describe("get_rating", () => {
     expect(t).toContain("Aave V3 — A (87/100) · protocol");
     expect(t).toContain("chains: ethereum");
     expect(t).toContain("categories: Lending");
-    expect(t).toContain("ratings?search=protocol-aave-v3");
+    expect(t).toContain("products/ratings#protocol-aave-v3");
     expect(t).toContain("Rating by Verdict —");
     expect(r.isError).toBeFalsy();
   });
