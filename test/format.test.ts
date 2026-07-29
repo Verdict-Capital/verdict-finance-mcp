@@ -10,8 +10,8 @@ import {
 
 describe("deepLink", () => {
   it("builds the #<type>-<slug> ratings link", () => {
-    expect(deepLink("protocol", "aave-v3")).toBe(
-      "https://www.verdict.finance/products/ratings#protocol-aave-v3",
+    expect(deepLink("protocol", "aave")).toBe(
+      "https://www.verdict.finance/products/ratings#protocol-aave",
     );
   });
 });
@@ -30,9 +30,9 @@ describe("attribution", () => {
 
 describe("formatItem", () => {
   const base: RatingItem = {
-    name: "Aave V3",
+    name: "Aave V4",
     entityType: "protocol",
-    slug: "aave-v3",
+    slug: "aave",
     grade: "A",
     composite: 87,
     chains: ["ethereum", "base"],
@@ -41,7 +41,7 @@ describe("formatItem", () => {
 
   it("renders a rated item with grade, score, chains and link", () => {
     expect(formatItem(base)).toBe(
-      "Aave V3 — A (87/100) · protocol · chains: ethereum, base · https://www.verdict.finance/products/ratings#protocol-aave-v3",
+      "Aave V4 — A (87/100) · protocol · chains: ethereum, base · https://www.verdict.finance/products/ratings#protocol-aave",
     );
   });
 
@@ -51,7 +51,7 @@ describe("formatItem", () => {
 
   it("renders 'unrated' when grade and composite are null", () => {
     const line = formatItem({ ...base, grade: null, composite: null });
-    expect(line).toContain("Aave V3 — unrated · protocol");
+    expect(line).toContain("Aave V4 — unrated · protocol");
   });
 
   it("omits the chains segment when there are none", () => {
@@ -69,7 +69,7 @@ describe("toRatingItem", () => {
   it("maps letter_grade/composite_score and chain names", () => {
     const item = toRatingItem(
       "protocol",
-      { id: "1", name: "Aave V3", slug: "aave-v3", chains: [{ name: "Ethereum", slug: "ethereum" }], categories: ["Lending"] },
+      { id: "1", name: "Aave V4", slug: "aave", chains: [{ name: "Ethereum", slug: "ethereum" }], categories: ["Lending"] },
       { letter_grade: "A", composite_score: 87 },
     );
     expect(item.grade).toBe("A");

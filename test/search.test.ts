@@ -9,17 +9,17 @@ function text(r: { content: { type: string; text?: string }[] }): string {
 describe("search_ratings", () => {
   it("searches a single type when entity_type is given", async () => {
     const c = new FakeClient();
-    c.entities.protocol = [entity({ id: "p1", name: "Aave V3", slug: "aave-v3" })];
+    c.entities.protocol = [entity({ id: "p1", name: "Aave V4", slug: "aave" })];
     c.ratings.p1 = { letter_grade: "A", composite_score: 87 };
 
     const r = await searchRatings(c, { query: "aave", entity_type: "protocol" });
-    expect(text(r)).toContain("Aave V3 — A (87/100) · protocol");
+    expect(text(r)).toContain("Aave V4 — A (87/100) · protocol");
     expect(c.calls.list).toBe(1); // only the one type queried
   });
 
   it("queries all 7 types and merges, best-rated first, when entity_type is omitted", async () => {
     const c = new FakeClient();
-    c.entities.protocol = [entity({ id: "p1", name: "Aave Protocol", slug: "aave-v3" })];
+    c.entities.protocol = [entity({ id: "p1", name: "Aave Protocol", slug: "aave" })];
     c.entities.token = [entity({ id: "t1", name: "Aave Token", slug: "aave" })];
     c.ratings.p1 = { letter_grade: "B", composite_score: 70 };
     c.ratings.t1 = { letter_grade: "A", composite_score: 95 };
@@ -59,14 +59,14 @@ describe("search_ratings", () => {
   it("survives one flaky scorecard by rendering that item unrated", async () => {
     const c = new FakeClient();
     c.entities.protocol = [
-      entity({ id: "p1", name: "Aave V3", slug: "aave-v3" }),
+      entity({ id: "p1", name: "Aave V4", slug: "aave" }),
       entity({ id: "p2", name: "Aave V2", slug: "aave-v2" }),
     ];
     c.ratings.p1 = { letter_grade: "A", composite_score: 90 };
     // p2 has no rating entry -> getLatestRating returns null -> unrated
     const r = await searchRatings(c, { query: "aave", entity_type: "protocol" });
     const t = text(r);
-    expect(t).toContain("Aave V3 — A (90/100)");
+    expect(t).toContain("Aave V4 — A (90/100)");
     expect(t).toContain("Aave V2 — unrated");
   });
 });
