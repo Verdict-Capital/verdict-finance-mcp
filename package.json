@@ -22,7 +22,16 @@
     "test": "vitest run",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["mcp", "defi", "ratings", "risk", "security", "trust-layer", "verdict", "crypto"],
+  "keywords": [
+    "mcp",
+    "defi",
+    "ratings",
+    "risk",
+    "security",
+    "trust-layer",
+    "verdict",
+    "crypto"
+  ],
   "homepage": "https://www.verdict.finance",
   "repository": {
     "type": "git",
@@ -38,6 +47,6 @@
   "devDependencies": {
     "@types/node": "^20.14.0",
     "typescript": "^5.5.0",
-    "vitest": "^2.0.0"
+    "vitest": "^3.2.7"
   }
 }
