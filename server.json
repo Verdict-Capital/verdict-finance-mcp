@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "io.github.verdict-capital/verdict-finance-mcp",
+  "description": "Verdict (verdict.finance) ratings for AI agents: letter grade + composite score for protocols, chains, tokens, oracles, vaults, organisations and bridges. Keyless, wraps the live anonymous Verdict API. First module of the callable Verdict trust layer.",
+  "repository": {
+    "url": "https://github.com/Verdict-Capital/verdict-finance-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registry_type": "npm",
+      "identifier": "verdict-finance-mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

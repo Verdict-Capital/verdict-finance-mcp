@@ -1,0 +1,43 @@
+{
+  "name": "verdict-finance-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Verdict (verdict.finance), the institutional diligence layer for DeFi. Gives AI agents keyless access to Verdict ratings: letter grade + composite score for protocols, chains, tokens, oracles, vaults, organisations and bridges. Ratings are the first live module of the callable trust layer.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "bin": {
+    "verdict-finance-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "server.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": ["mcp", "defi", "ratings", "risk", "security", "trust-layer", "verdict", "crypto"],
+  "homepage": "https://www.verdict.finance",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Verdict-Capital/verdict-finance-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Verdict-Capital/verdict-finance-mcp/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}
