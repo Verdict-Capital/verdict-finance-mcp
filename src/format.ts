@@ -70,7 +70,7 @@ function ratingBadge(grade: string | null, composite: number | null): string {
 
 /**
  * One line per item, e.g.
- * `Aave V3 — A (87/100) · protocol · chains: ethereum, base · <link>`
+ * `Aave V4 — A (87/100) · protocol · chains: ethereum, base · <link>`
  */
 export function formatItem(item: RatingItem, opts: { categories?: boolean } = {}): string {
   const parts = [

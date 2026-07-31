@@ -7,14 +7,14 @@ import { entityTypeSchema } from "../schema.js";
 
 export const getRatingInput = {
   entity_type: entityTypeSchema.describe("The kind of entity: protocol, chain, token, oracle, vault, organisation, or bridge."),
-  identifier: z.string().min(1).describe("The entity's slug (e.g. 'aave' or 'ethereum') or UUID."),
+  identifier: z.string().min(1).describe("The entity's slug (e.g. 'aave-v4' or 'ethereum') or UUID."),
 } as const;
 
 export const getRatingMeta = {
   name: "get_rating",
   title: "Get a Verdict rating",
   description:
-    "Get the full free-tier Verdict rating for one DeFi entity (letter grade + composite score 0-100 + public metadata). Identify it by slug (e.g. 'aave') or UUID. Example: get_rating({ entity_type: 'protocol', identifier: 'aave' }).",
+    "Get the full free-tier Verdict rating for one DeFi entity (letter grade + composite score 0-100 + public metadata). Identify it by slug (e.g. 'aave-v4') or UUID. Example: get_rating({ entity_type: 'protocol', identifier: 'aave-v4' }).",
 };
 
 export async function getRating(

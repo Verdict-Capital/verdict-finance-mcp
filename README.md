@@ -36,7 +36,7 @@ That is it. No key. (Requires Node 20+.)
 | Tool | What it does |
 | --- | --- |
 | `search_ratings({ query, entity_type? })` | Find entities by name or keyword. Omit `entity_type` to search all 7 types at once. |
-| `get_rating({ entity_type, identifier })` | Full free-tier rating for one entity, by slug (`aave`, `ethereum`) or UUID. Includes dependency-drag provenance when it shaped the grade. |
+| `get_rating({ entity_type, identifier })` | Full free-tier rating for one entity, by slug (`aave-v4`, `ethereum`) or UUID. Includes dependency-drag provenance when it shaped the grade. |
 | `list_ratings({ entity_type, category?, chain?, limit? })` | Browse a set, best-rated first (default 25, cap 50). Category filters are lowercase, e.g. `lending`. |
 
 Every response ends with an attribution line linking back to the rating on
@@ -44,16 +44,16 @@ verdict.finance.
 
 ### Example prompts
 
-- *"What does Verdict rate Aave?"* runs `get_rating({ entity_type: "protocol", identifier: "aave" })`
+- *"What does Verdict rate Aave?"* runs `get_rating({ entity_type: "protocol", identifier: "aave-v4" })`
 - *"Search Verdict for Chainlink."* runs `search_ratings({ query: "chainlink" })`
 - *"List the chains Verdict rates."* runs `list_ratings({ entity_type: "chain" })`
 
 ### Example output
 
 ```
-Aave V4 — BBB (78/100) · protocol · chains: Ethereum · categories: lending · https://www.verdict.finance/products/ratings#protocol-aave
+Aave V4 — BBB (78/100) · protocol · chains: Ethereum · categories: lending · https://www.verdict.finance/products/ratings#protocol-aave-v4
 
-Rating by Verdict — https://www.verdict.finance/products/ratings#protocol-aave · Methodology + deeper analysis at https://www.verdict.finance
+Rating by Verdict — https://www.verdict.finance/products/ratings#protocol-aave-v4 · Methodology + deeper analysis at https://www.verdict.finance
 ```
 
 Entities that are not yet rated render as `unrated`. When a rating was pulled

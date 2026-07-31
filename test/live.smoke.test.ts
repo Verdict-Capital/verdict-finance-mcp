@@ -29,7 +29,7 @@ run("live smoke (real api)", () => {
   const triples: Array<["chain" | "oracle" | "protocol", string]> = [
     ["chain", "ethereum"],
     ["oracle", "chainlink"],
-    ["protocol", "aave"],
+    ["protocol", "aave-v4"],
   ];
   for (const [entity_type, identifier] of triples) {
     it(`get_rating(${entity_type}, ${identifier}) returns a rating`, async () => {
