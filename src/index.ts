@@ -11,7 +11,7 @@ import { searchRatings, searchRatingsInput, searchRatingsMeta } from "./tools/se
 import { listRatings, listRatingsInput, listRatingsMeta } from "./tools/list.js";
 import { quantumReadiness, quantumReadinessInput, quantumReadinessMeta } from "./tools/quantum.js";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 
 async function main(): Promise<void> {
   const client = new HttpVerdictClient();

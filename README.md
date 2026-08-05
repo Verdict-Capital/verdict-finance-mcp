@@ -38,15 +38,22 @@ That is it. No key. (Requires Node 20+.)
 | `search_ratings({ query, entity_type? })` | Find entities by name or keyword. Omit `entity_type` to search all 7 types at once. |
 | `get_rating({ entity_type, identifier })` | Full free-tier rating for one entity, by slug (`aave-v4`, `ethereum`) or UUID. Includes dependency-drag provenance when it shaped the grade. |
 | `list_ratings({ entity_type, category?, chain?, limit? })` | Browse a set, best-rated first (default 25, cap 50). Category filters are lowercase, e.g. `lending`. |
+| `quantum_readiness({ chain? })` | Post-quantum cryptographic readiness for chains (QRI 0-100, readiness band, migration stage, hybrid-signature status), data by LayerQu. Omit `chain` for the full 72+ chain league table, including chains Verdict has not rated. |
 
 Every response ends with an attribution line linking back to the rating on
 verdict.finance.
+
+Quantum-readiness data is provided by
+[LayerQu](https://layerqu.com/dashboard/) and is companion data only. It never
+feeds a Verdict grade; chain ratings simply carry an extra LayerQu line when a
+reading is available.
 
 ### Example prompts
 
 - *"What does Verdict rate Aave?"* runs `get_rating({ entity_type: "protocol", identifier: "aave-v4" })`
 - *"Search Verdict for Chainlink."* runs `search_ratings({ query: "chainlink" })`
 - *"List the chains Verdict rates."* runs `list_ratings({ entity_type: "chain" })`
+- *"Is Ethereum quantum-ready?"* runs `quantum_readiness({ chain: "ethereum" })`
 
 ### Example output
 

@@ -8,6 +8,7 @@ import { HttpVerdictClient } from "../src/client.js";
 import { getRating } from "../src/tools/get.js";
 import { listRatings } from "../src/tools/list.js";
 import { searchRatings } from "../src/tools/search.js";
+import { quantumReadiness } from "../src/tools/quantum.js";
 
 const run = process.env.VERDICT_LIVE_SMOKE === "1" ? describe : describe.skip;
 
@@ -39,4 +40,12 @@ run("live smoke (real api)", () => {
       expect(text).toContain("Rating by Verdict —");
     }, 20_000);
   }
+
+  it("quantum_readiness(ethereum) returns a QRI line (LayerQu)", async () => {
+    const r = await quantumReadiness(client, { chain: "ethereum" });
+    const text = r.content.map((c) => c.text ?? "").join("\n");
+    expect(r.isError).toBeFalsy();
+    expect(text).toContain("QRI");
+    expect(text).toContain("Data: LayerQu - https://layerqu.com/dashboard/");
+  }, 20_000);
 });
