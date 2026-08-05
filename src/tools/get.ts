@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { EntityType } from "../entities.js";
 import { VerdictError, type VerdictClient } from "../client.js";
-import { attribution, deepLink, detailLines, formatItem, toRatingItem } from "../format.js";
+import { attribution, deepLink, detailLines, formatItem, quantumReadinessLine, toRatingItem } from "../format.js";
 import { textResult, errorResult, friendlyError, type ToolResult } from "../respond.js";
 import { entityTypeSchema } from "../schema.js";
 
@@ -26,7 +26,18 @@ export async function getRating(
     const entity = await client.getEntity(entity_type, identifier);
     const rating = await client.getLatestRating(entity_type, entity.id);
     const item = toRatingItem(entity_type, entity, rating);
-    const body = [formatItem(item, { categories: true }), ...detailLines(item)].join("\n");
+    const lines = [formatItem(item, { categories: true }), ...detailLines(item)];
+    if (entity_type === "chain") {
+      // Companion quantum-readiness line. A quantum lookup failure must NEVER
+      // break a rating response, so it is fully isolated.
+      try {
+        const ql = quantumReadinessLine(await client.getQuantumReadiness(entity.slug));
+        if (ql) lines.push(ql);
+      } catch {
+        // swallow - no quantum line, rating stands
+      }
+    }
+    const body = lines.join("\n");
     return textResult(`${body}\n\n${attribution(deepLink(entity_type, entity.slug))}`);
   } catch (err) {
     if (err instanceof VerdictError && err.kind === "not_found") {

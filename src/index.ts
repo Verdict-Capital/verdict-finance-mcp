@@ -9,6 +9,7 @@ import { HttpVerdictClient } from "./client.js";
 import { getRating, getRatingInput, getRatingMeta } from "./tools/get.js";
 import { searchRatings, searchRatingsInput, searchRatingsMeta } from "./tools/search.js";
 import { listRatings, listRatingsInput, listRatingsMeta } from "./tools/list.js";
+import { quantumReadiness, quantumReadinessInput, quantumReadinessMeta } from "./tools/quantum.js";
 
 const VERSION = "0.1.0";
 
@@ -44,6 +45,16 @@ async function main(): Promise<void> {
       inputSchema: listRatingsInput,
     },
     (args) => listRatings(client, args),
+  );
+
+  server.registerTool(
+    quantumReadinessMeta.name,
+    {
+      title: quantumReadinessMeta.title,
+      description: quantumReadinessMeta.description,
+      inputSchema: quantumReadinessInput,
+    },
+    (args) => quantumReadiness(client, args),
   );
 
   const transport = new StdioServerTransport();

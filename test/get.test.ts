@@ -64,4 +64,48 @@ describe("get_rating", () => {
     expect(text(r)).toBe("Couldn't reach Verdict right now; try again.");
     expect(r.isError).toBe(true);
   });
+
+  it("chain get_rating appends the QRI line when available", async () => {
+    const c = new FakeClient();
+    c.entities.chain = [entity({ id: "c1", name: "Ethereum", slug: "ethereum" })];
+    c.ratings.c1 = { letter_grade: "A", composite_score: 80 };
+    c.quantum = { available: true, chain_slug: "ethereum", qri: 25, band: 2,
+      band_label: "Acknowledged", stage: 2, hybrid: "FAIL", danger: false, ci: 4 };
+    const r = await getRating(c, { entity_type: "chain", identifier: "ethereum" });
+    const t = text(r);
+    expect(t).toContain("Quantum readiness (LayerQu): QRI 25/100 - Band 2 Acknowledged - Stage S2");
+    expect(r.isError).toBeFalsy();
+  });
+
+  it("chain get_rating omits the QRI line when absent", async () => {
+    const c = new FakeClient();
+    c.entities.chain = [entity({ id: "c1", name: "Ethereum", slug: "ethereum" })];
+    c.ratings.c1 = { letter_grade: "A", composite_score: 80 };
+    c.quantum = { available: false, reason: "not assessed by source" };
+    const r = await getRating(c, { entity_type: "chain", identifier: "ethereum" });
+    const t = text(r);
+    expect(t).not.toContain("Quantum readiness");
+    expect(r.isError).toBeFalsy();
+  });
+
+  it("chain get_rating survives a quantum fetch failure (no line, no throw)", async () => {
+    const c = new FakeClient();
+    c.entities.chain = [entity({ id: "c1", name: "Ethereum", slug: "ethereum" })];
+    c.ratings.c1 = { letter_grade: "A", composite_score: 80 };
+    c.throwOn.quantum = "network";
+    const r = await getRating(c, { entity_type: "chain", identifier: "ethereum" });
+    const t = text(r);
+    expect(t).toContain("Ethereum — A (80/100) · chain");
+    expect(t).not.toContain("Quantum readiness");
+    expect(r.isError).toBeFalsy();
+  });
+
+  it("non-chain get_rating does not fetch quantum", async () => {
+    const c = new FakeClient();
+    c.entities.protocol = [entity({ id: "p1", name: "Aave V4", slug: "aave" })];
+    c.ratings.p1 = { letter_grade: "A", composite_score: 87 };
+    const r = await getRating(c, { entity_type: "protocol", identifier: "aave" });
+    expect(c.calls.quantum).toBe(0);
+    expect(text(r)).not.toContain("Quantum readiness");
+  });
 });

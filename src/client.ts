@@ -57,11 +57,56 @@ export interface ListParams {
   limit?: number;
 }
 
+/** One row of the LayerQu post-quantum readiness league table. */
+export interface QuantumRow {
+  slug: string;
+  name: string;
+  profile?: string;
+  stage: number;
+  qri: number;
+  band: number;
+  band_label: string;
+  hybrid?: string;
+  danger?: boolean;
+  ci?: number | null;
+  matched_chain_slug?: string | null;
+}
+
+/** Per-chain quantum-readiness payload (availability is data, not an error). */
+export interface QuantumChain {
+  available: boolean;
+  reason?: string;
+  source?: string;
+  source_url?: string;
+  chain_slug?: string;
+  qri?: number;
+  band?: number;
+  band_label?: string;
+  stage?: number;
+  hybrid?: string;
+  danger?: boolean;
+  ci?: number | null;
+}
+
+/** Full league payload. */
+export interface QuantumLeague {
+  available: boolean;
+  reason?: string;
+  source?: string;
+  source_url?: string;
+  rows?: QuantumRow[];
+  rows_skipped?: number;
+}
+
+export type QuantumReadiness = QuantumChain | QuantumLeague;
+
 export interface VerdictClient {
   listEntities(type: EntityType, params?: ListParams): Promise<EntityRecord[]>;
   getEntity(type: EntityType, identifier: string): Promise<EntityRecord>;
   /** Latest published scorecard for an entity, or null if it has none yet. */
   getLatestRating(type: EntityType, entityId: string): Promise<Rating | null>;
+  /** LayerQu quantum readiness: per-chain with a slug, else the league table. */
+  getQuantumReadiness(chainSlug?: string): Promise<QuantumReadiness>;
 }
 
 export class HttpVerdictClient implements VerdictClient {
@@ -99,6 +144,13 @@ export class HttpVerdictClient implements VerdictClient {
       largest_drag_hint: latest.largest_drag_hint ?? null,
       has_unrated_dependencies: latest.has_unrated_dependencies ?? false,
     };
+  }
+
+  async getQuantumReadiness(chainSlug?: string): Promise<QuantumReadiness> {
+    const path = chainSlug
+      ? `/chains/${encodeURIComponent(chainSlug)}/quantum-readiness`
+      : "/quantum-readiness";
+    return this.get<QuantumReadiness>(path);
   }
 
   private async get<T>(path: string): Promise<T> {

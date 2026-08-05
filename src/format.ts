@@ -93,6 +93,24 @@ export function attribution(link: string = RATINGS): string {
   return `Rating by Verdict — ${link} · Methodology + deeper analysis at ${SITE}`;
 }
 
+/**
+ * The one-line quantum-readiness summary shared by get_rating (chains) and the
+ * quantum_readiness tool's per-chain detail. Returns null when the source has
+ * no assessment for the chain (available:false or missing score fields), so
+ * callers append nothing. Plain hyphens only.
+ */
+export function quantumReadinessLine(q: {
+  available?: boolean;
+  qri?: number | null;
+  band?: number | null;
+  band_label?: string | null;
+  stage?: number | null;
+}): string | null {
+  if (!q || q.available === false) return null;
+  if (q.qri == null || q.band == null || q.stage == null) return null;
+  return `Quantum readiness (LayerQu): QRI ${q.qri}/100 - Band ${q.band} ${q.band_label ?? ""} - Stage S${q.stage}`;
+}
+
 /** Rank: rated before unrated, then by composite desc, then name. */
 export function byGradeDesc(a: RatingItem, b: RatingItem): number {
   const av = a.composite ?? -1;
