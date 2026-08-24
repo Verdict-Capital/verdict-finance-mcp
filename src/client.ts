@@ -100,6 +100,39 @@ export interface QuantumLeague {
 
 export type QuantumReadiness = QuantumChain | QuantumLeague;
 
+/** One confirmed hack incident from the public feed. */
+export interface Incident {
+  incident_id: string;
+  protocol_name: string;
+  /** Verdict slug, null when the incident did not match a rated protocol. */
+  slug: string | null;
+  matched_protocol: boolean;
+  status: string;
+  exploit_class: string | null;
+  loss_estimate_usd: number | null;
+  chain: string | null;
+  confidence_bps: number;
+  source_count: number;
+  sources: unknown[] | null;
+  detected_at: string;
+  first_seen_at: string;
+  resolved_at: string | null;
+  resolution: string | null;
+}
+
+export interface IncidentParams {
+  /** ISO datetime; only incidents detected after it. */
+  since?: string;
+  /** Exact Verdict slug of a rated protocol. */
+  slug?: string;
+  limit?: number;
+}
+
+export interface IncidentPage {
+  items: Incident[];
+  total: number;
+}
+
 export interface VerdictClient {
   listEntities(type: EntityType, params?: ListParams): Promise<EntityRecord[]>;
   getEntity(type: EntityType, identifier: string): Promise<EntityRecord>;
@@ -107,6 +140,8 @@ export interface VerdictClient {
   getLatestRating(type: EntityType, entityId: string): Promise<Rating | null>;
   /** LayerQu quantum readiness: per-chain with a slug, else the league table. */
   getQuantumReadiness(chainSlug?: string): Promise<QuantumReadiness>;
+  /** Confirmed hack incidents, newest first. */
+  listIncidents(params?: IncidentParams): Promise<IncidentPage>;
 }
 
 export class HttpVerdictClient implements VerdictClient {
@@ -151,6 +186,18 @@ export class HttpVerdictClient implements VerdictClient {
       ? `/chains/${encodeURIComponent(chainSlug)}/quantum-readiness`
       : "/quantum-readiness";
     return this.get<QuantumReadiness>(path);
+  }
+
+  async listIncidents(params: IncidentParams = {}): Promise<IncidentPage> {
+    // URLSearchParams percent-encodes for us. That matters most for `since`:
+    // an ISO timestamp ending "+00:00" pasted raw into a query string has its
+    // "+" decoded as a space and the API answers 422. Callers never see that.
+    const qs = new URLSearchParams();
+    if (params.since) qs.set("since", params.since);
+    if (params.slug) qs.set("slug", params.slug);
+    qs.set("limit", String(params.limit ?? 25));
+    const body = await this.get<Partial<IncidentPage>>(`/incidents?${qs.toString()}`);
+    return { items: body.items ?? [], total: body.total ?? 0 };
   }
 
   private async get<T>(path: string): Promise<T> {

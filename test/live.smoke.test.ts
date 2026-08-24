@@ -9,6 +9,7 @@ import { getRating } from "../src/tools/get.js";
 import { listRatings } from "../src/tools/list.js";
 import { searchRatings } from "../src/tools/search.js";
 import { quantumReadiness } from "../src/tools/quantum.js";
+import { getRecentIncidents } from "../src/tools/incidents.js";
 
 const run = process.env.VERDICT_LIVE_SMOKE === "1" ? describe : describe.skip;
 
@@ -40,6 +41,20 @@ run("live smoke (real api)", () => {
       expect(text).toContain("Rating by Verdict —");
     }, 20_000);
   }
+
+  it("get_recent_incidents returns the live confirmed feed", async () => {
+    const r = await getRecentIncidents(client, { limit: 20 });
+    const text = r.content.map((c) => c.text ?? "").join("\n");
+    expect(r.isError).toBeFalsy();
+    expect(text).toContain("confirmed hack incidents, newest first");
+    expect(text).toContain("re-rating is always a human decision");
+  }, 20_000);
+
+  it("get_recent_incidents accepts a since offset without a 422", async () => {
+    // The "+" trap: only encoding keeps this from reaching the API as a space.
+    const r = await getRecentIncidents(client, { since: "2026-01-01T00:00:00+00:00" });
+    expect(r.isError).toBeFalsy();
+  }, 20_000);
 
   it("quantum_readiness(ethereum) returns a QRI line (LayerQu)", async () => {
     const r = await quantumReadiness(client, { chain: "ethereum" });

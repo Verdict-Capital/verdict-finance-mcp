@@ -1,20 +1,70 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.verdict-capital/verdict-finance-mcp",
-  "description": "Verdict (verdict.finance) ratings for AI agents: letter grade + composite score for protocols, chains, tokens, oracles, vaults, organisations and bridges. Keyless, wraps the live anonymous Verdict API. First module of the callable Verdict trust layer.",
+  "title": "Verdict: DeFi ratings, quantum readiness and hack incidents",
+  "description": "Keyless DeFi risk ratings: live letter grades, quantum readiness and a confirmed hack feed.",
   "repository": {
     "url": "https://github.com/Verdict-Capital/verdict-finance-mcp",
     "source": "github"
   },
-  "version": "0.2.0",
+  "version": "0.3.0",
+  "websiteUrl": "https://www.verdict.finance",
   "packages": [
     {
-      "registry_type": "npm",
+      "registryType": "npm",
       "identifier": "verdict-finance-mcp",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "transport": {
         "type": "stdio"
       }
     }
-  ]
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "categories": ["finance", "security", "developer-tools", "data-analysis"],
+      "documentation": "https://github.com/Verdict-Capital/verdict-finance-mcp#readme",
+      "keywords": [
+        "defi",
+        "risk ratings",
+        "credit ratings",
+        "protocol risk",
+        "smart contract risk",
+        "hack incidents",
+        "exploits",
+        "post-quantum readiness",
+        "bridges",
+        "oracles",
+        "stablecoins",
+        "vaults",
+        "due diligence"
+      ],
+      "tools": [
+        {
+          "name": "search_ratings",
+          "task": "Find rated entities by name or keyword across all seven types"
+        },
+        {
+          "name": "get_rating",
+          "task": "Letter grade and composite score for one protocol, chain, token, oracle, vault, organisation or bridge"
+        },
+        {
+          "name": "list_ratings",
+          "task": "Browse a rated set best-first, filtered by category or chain"
+        },
+        {
+          "name": "quantum_readiness",
+          "task": "Post-quantum cryptographic readiness for a chain, or the full league table"
+        },
+        {
+          "name": "get_recent_incidents",
+          "task": "Confirmed DeFi hack incidents, newest first, pollable with a since cursor"
+        }
+      ],
+      "useCases": [
+        "Check what Verdict rates a DeFi protocol before allocating to it",
+        "Screen a portfolio's chains, oracles and bridges for dependency risk",
+        "Poll a confirmed hack feed to drive an agent's risk workflow"
+      ]
+    }
+  }
 }

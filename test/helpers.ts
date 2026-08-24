@@ -1,4 +1,4 @@
-import { VerdictError, type EntityRecord, type QuantumReadiness, type Rating, type VerdictClient, type ListParams } from "../src/client.js";
+import { VerdictError, type EntityRecord, type IncidentPage, type IncidentParams, type QuantumReadiness, type Rating, type VerdictClient, type ListParams } from "../src/client.js";
 import type { EntityType } from "../src/entities.js";
 
 type Kind = "not_found" | "rate_limit" | "network" | "server" | "unknown";
@@ -11,9 +11,11 @@ export class FakeClient implements VerdictClient {
   entities: Partial<Record<EntityType, EntityRecord[]>> = {};
   ratings: Record<string, Rating | null> = {};
   quantum: QuantumReadiness = { available: false };
-  throwOn: Partial<Record<"list" | "get" | "rating" | "quantum", Kind>> = {};
-  calls = { list: 0, get: 0, rating: 0, quantum: 0 };
+  incidents: IncidentPage = { items: [], total: 0 };
+  throwOn: Partial<Record<"list" | "get" | "rating" | "quantum" | "incidents", Kind>> = {};
+  calls = { list: 0, get: 0, rating: 0, quantum: 0, incidents: 0 };
   lastListParams: ListParams | undefined;
+  lastIncidentParams: IncidentParams | undefined;
 
   async listEntities(type: EntityType, params: ListParams = {}): Promise<EntityRecord[]> {
     this.calls.list++;
@@ -47,6 +49,13 @@ export class FakeClient implements VerdictClient {
     this.calls.quantum++;
     if (this.throwOn.quantum) throw new VerdictError(this.throwOn.quantum, "forced");
     return this.quantum;
+  }
+
+  async listIncidents(params: IncidentParams = {}): Promise<IncidentPage> {
+    this.calls.incidents++;
+    this.lastIncidentParams = params;
+    if (this.throwOn.incidents) throw new VerdictError(this.throwOn.incidents, "forced");
+    return this.incidents;
   }
 }
 

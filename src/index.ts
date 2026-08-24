@@ -10,8 +10,9 @@ import { getRating, getRatingInput, getRatingMeta } from "./tools/get.js";
 import { searchRatings, searchRatingsInput, searchRatingsMeta } from "./tools/search.js";
 import { listRatings, listRatingsInput, listRatingsMeta } from "./tools/list.js";
 import { quantumReadiness, quantumReadinessInput, quantumReadinessMeta } from "./tools/quantum.js";
+import { getRecentIncidents, recentIncidentsInput, recentIncidentsMeta } from "./tools/incidents.js";
 
-const VERSION = "0.2.0";
+const VERSION = "0.3.0";
 
 async function main(): Promise<void> {
   const client = new HttpVerdictClient();
@@ -55,6 +56,16 @@ async function main(): Promise<void> {
       inputSchema: quantumReadinessInput,
     },
     (args) => quantumReadiness(client, args),
+  );
+
+  server.registerTool(
+    recentIncidentsMeta.name,
+    {
+      title: recentIncidentsMeta.title,
+      description: recentIncidentsMeta.description,
+      inputSchema: recentIncidentsInput,
+    },
+    (args) => getRecentIncidents(client, args),
   );
 
   const transport = new StdioServerTransport();

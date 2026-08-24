@@ -1,7 +1,7 @@
 {
   "name": "verdict-finance-mcp",
-  "version": "0.2.0",
-  "description": "MCP server for Verdict (verdict.finance), the institutional diligence layer for DeFi. Gives AI agents keyless access to Verdict ratings: letter grade + composite score for protocols, chains, tokens, oracles, vaults, organisations and bridges. Ratings are the first live module of the callable trust layer.",
+  "version": "0.3.0",
+  "description": "MCP server for Verdict (verdict.finance), the institutional diligence layer for DeFi. Gives AI agents keyless access to Verdict ratings for protocols, chains, tokens, oracles, vaults, organisations and bridges, post-quantum readiness for chains, and a live feed of confirmed DeFi hack incidents.",
   "type": "module",
   "license": "Apache-2.0",
   "bin": {
@@ -24,10 +24,13 @@
   },
   "keywords": [
     "mcp",
+    "model-context-protocol",
     "defi",
     "ratings",
     "risk",
     "security",
+    "hacks",
+    "incidents",
     "trust-layer",
     "verdict",
     "crypto"
