@@ -1,19 +1,19 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.verdict-capital/verdict-finance-mcp",
+  "name": "io.github.charles-verdict/verdict-finance-mcp",
   "title": "Verdict: DeFi ratings, quantum readiness and hack incidents",
   "description": "Keyless DeFi risk ratings: live letter grades, quantum readiness and a confirmed hack feed.",
   "repository": {
     "url": "https://github.com/Verdict-Capital/verdict-finance-mcp",
     "source": "github"
   },
-  "version": "0.3.0",
+  "version": "0.3.1",
   "websiteUrl": "https://www.verdict.finance",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "verdict-finance-mcp",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "transport": {
         "type": "stdio"
       }

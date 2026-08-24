@@ -1,6 +1,7 @@
 {
   "name": "verdict-finance-mcp",
-  "version": "0.3.0",
+  "version": "0.3.1",
+  "mcpName": "io.github.charles-verdict/verdict-finance-mcp",
   "description": "MCP server for Verdict (verdict.finance), the institutional diligence layer for DeFi. Gives AI agents keyless access to Verdict ratings for protocols, chains, tokens, oracles, vaults, organisations and bridges, post-quantum readiness for chains, and a live feed of confirmed DeFi hack incidents.",
   "type": "module",
   "license": "Apache-2.0",
