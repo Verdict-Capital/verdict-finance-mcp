@@ -6,3 +6,4 @@ dist/
 .env.local
 coverage/
 .mcpregistry_github_token
+mcp-publisher.exe
