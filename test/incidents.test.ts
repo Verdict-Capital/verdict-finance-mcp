@@ -145,6 +145,78 @@ describe("get_recent_incidents tool", () => {
   });
 });
 
+describe("min_status tiers", () => {
+  it("passes a requested tier through to the client", async () => {
+    const c = new FakeClient();
+    await getRecentIncidents(c, { min_status: "corroborated" });
+    expect(c.lastIncidentParams?.min_status).toBe("corroborated");
+  });
+
+  it("sends no tier when none was asked for", async () => {
+    // The server default (confirmed) stays authoritative: not mirroring it here
+    // means there is one place for it to change.
+    const c = new FakeClient();
+    await getRecentIncidents(c, {});
+    expect(c.lastIncidentParams?.min_status).toBeUndefined();
+  });
+
+  it("tags an unconfirmed lead on its own line", async () => {
+    // These lines get summarised by an agent, and an unconfirmed lead read
+    // aloud as a confirmed hack is the failure that matters here.
+    const c = new FakeClient();
+    c.incidents = {
+      items: [incident({
+        incident_id: "i-lead", protocol_name: "Lead Co", status: "corroborated",
+      })],
+      total: 1,
+    };
+    const t = text(await getRecentIncidents(c, { min_status: "corroborated" }));
+    expect(t).toContain("[corroborated - unconfirmed lead] Lead Co");
+  });
+
+  it("leaves a confirmed line untagged", async () => {
+    const c = new FakeClient();
+    c.incidents = {
+      items: [incident({ incident_id: "i-1", protocol_name: "Summer Fi" })],
+      total: 1,
+    };
+    const t = text(await getRecentIncidents(c, { min_status: "corroborated" }));
+    expect(t).toContain("Summer Fi - first reported");
+    expect(t).not.toContain("unconfirmed lead");
+  });
+
+  it("drops the word confirmed from the header when leads were requested", async () => {
+    const c = new FakeClient();
+    c.incidents = {
+      items: [incident({
+        incident_id: "i-lead", protocol_name: "Lead Co", status: "corroborated",
+      })],
+      total: 1,
+    };
+    const t = text(await getRecentIncidents(c, { min_status: "corroborated" }));
+    expect(t).toContain("1 of 1 hack incidents, newest first");
+    expect(t).not.toContain("confirmed hack incidents, newest first");
+  });
+
+  it("still says confirmed when the default tier is in play", async () => {
+    const c = new FakeClient();
+    c.incidents = {
+      items: [incident({ incident_id: "i-1", protocol_name: "Summer Fi" })],
+      total: 1,
+    };
+    const t = text(await getRecentIncidents(c, {}));
+    expect(t).toContain("1 of 1 confirmed hack incidents, newest first");
+  });
+
+  it("matches the header wording on an empty result", async () => {
+    const c = new FakeClient();
+    const leads = text(await getRecentIncidents(c, { min_status: "corroborated" }));
+    const confirmed = text(await getRecentIncidents(c, {}));
+    expect(leads).toContain("No hack incidents.");
+    expect(confirmed).toContain("No confirmed hack incidents.");
+  });
+});
+
 describe("incident query encoding", () => {
   it("percent-encodes a +00:00 offset so the API never sees a space", async () => {
     // The transport trap: pasted raw into a query string, the "+" in an ISO
@@ -166,5 +238,43 @@ describe("incident query encoding", () => {
     }
     expect(seen).toContain("since=2026-08-23T12%3A00%3A00%2B00%3A00");
     expect(seen).not.toContain("+00:00");
+  });
+
+  it("omits min_status from the query string entirely when unset", async () => {
+    // Sending min_status=confirmed by hand would work, but it would pin the
+    // default on this side; leaving the param off lets the server own it.
+    let seen = "";
+    const client = new HttpVerdictClient({ base: "https://example.invalid/api/v1" });
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async (url: string | URL) => {
+      seen = String(url);
+      return new Response(JSON.stringify({ items: [], total: 0 }), {
+        status: 200, headers: { "content-type": "application/json" },
+      });
+    }) as typeof fetch;
+    try {
+      await client.listIncidents({});
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+    expect(seen).not.toContain("min_status");
+  });
+
+  it("puts a requested min_status in the query string", async () => {
+    let seen = "";
+    const client = new HttpVerdictClient({ base: "https://example.invalid/api/v1" });
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async (url: string | URL) => {
+      seen = String(url);
+      return new Response(JSON.stringify({ items: [], total: 0 }), {
+        status: 200, headers: { "content-type": "application/json" },
+      });
+    }) as typeof fetch;
+    try {
+      await client.listIncidents({ min_status: "corroborated" });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+    expect(seen).toContain("min_status=corroborated");
   });
 });

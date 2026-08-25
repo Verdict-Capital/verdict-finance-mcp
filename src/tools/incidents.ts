@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Incident, VerdictClient } from "../client.js";
+import type { Incident, IncidentTier, VerdictClient } from "../client.js";
 import { errorResult, friendlyError, textResult, type ToolResult } from "../respond.js";
 
 const MAX_LIMIT = 200;
@@ -17,6 +17,12 @@ export const recentIncidentsInput = {
     .string()
     .optional()
     .describe("Optional Verdict protocol slug (e.g. 'aave-v4'). Exact match, not a search."),
+  min_status: z
+    .enum(["rumored", "corroborated", "confirmed"])
+    .optional()
+    .describe(
+      "Optional lowest confidence tier to return. Omit for the default of confirmed, which is the same set this tool has always returned. Pass 'corroborated' to also see multi-source leads that have not yet reached confirmation; expect the same incident_id to reappear at a higher tier as a lead escalates, so key on incident_id rather than assuming each id appears once.",
+    ),
   limit: z
     .number()
     .int()
@@ -28,9 +34,9 @@ export const recentIncidentsInput = {
 
 export const recentIncidentsMeta = {
   name: "get_recent_incidents",
-  title: "Recent confirmed hack incidents",
+  title: "Recent hack incidents",
   description:
-    "Confirmed hack incidents across DeFi, newest first. Each one is corroborated by more than one public hack-reporting source before it appears, so the feed lags the first rumour of an exploit by design and is not a real-time exploit alarm. Poll with `since` set to the newest detected_at you have already seen. Covers protocols, including ones Verdict does not rate: `matched_protocol` says whether the incident matched a rated protocol, and matching happens when the incident is received, so an incident stored before its protocol was rated is never retroactively re-matched and matched_protocol reflects rating coverage as of detection rather than today. An incident is a signal to look, never an automatic downgrade: a matched entity may be flagged under review, but re-rating is always a human decision, so do not infer a grade change from an incident appearing here. Examples: get_recent_incidents({ limit: 10 }), get_recent_incidents({ since: '2026-08-01T00:00:00Z' }).",
+    "Hack incidents across DeFi, newest first. Every incident is corroborated by more than one public hack-reporting source before it appears, so the feed lags the first rumour of an exploit by design and is not a real-time exploit alarm. Incidents carry a confidence tier in `status`: corroborated, then confirmed. By default only confirmed incidents are returned, which is exactly the set this tool has always returned; pass min_status: 'corroborated' to also see multi-source leads that have not yet reached confirmation. Poll with `since` set to the newest detected_at you have already seen. An incident that escalates keeps its incident_id and refreshes its detected_at, so the same id reappears at the top of a `since` poll at its new tier: key on incident_id and expect to see an incident more than once as it climbs. A tier never goes down in the feed. Covers protocols, including ones Verdict does not rate: `matched_protocol` says whether the incident matched a rated protocol, and matching re-runs when an incident escalates and its payload improves, so matched_protocol reads as of the incident's current tier; it is still never retroactive when Verdict's own coverage grows. An incident is a signal to look, never an automatic downgrade: a matched entity may be flagged under review, but re-rating is always a human decision, so do not infer a grade change from an incident appearing here. Examples: get_recent_incidents({ limit: 10 }), get_recent_incidents({ since: '2026-08-01T00:00:00Z' }), get_recent_incidents({ min_status: 'corroborated' }).",
 };
 
 function usd(value: number | null): string {
@@ -46,11 +52,17 @@ function day(iso: string): string {
 
 function renderIncident(i: Incident): string {
   // first_seen_at is when the hack was first reported; detected_at is when the
-  // feed CONFIRMED it, which can be much later and is shared by a whole batch.
-  // The report date is what tells an agent when this actually happened, so it
-  // is the one on the line. detected_at stays the polling cursor below.
+  // feed last moved the incident's tier, which can be much later and is shared
+  // by a whole batch. The report date is what tells an agent when this actually
+  // happened, so it is the one on the line. detected_at stays the polling
+  // cursor below.
+  //
+  // Anything below confirmed is tagged, because these lines get summarised and
+  // an unconfirmed lead read aloud as a confirmed hack is the failure that
+  // matters here.
+  const tag = i.status === "confirmed" ? "" : `[${i.status} - unconfirmed lead] `;
   const bits = [
-    `${i.protocol_name} - first reported ${day(i.first_seen_at)}`,
+    `${tag}${i.protocol_name} - first reported ${day(i.first_seen_at)}`,
     i.exploit_class ?? "class unknown",
     usd(i.loss_estimate_usd),
   ];
@@ -67,29 +79,34 @@ function renderIncident(i: Incident): string {
 
 export async function getRecentIncidents(
   client: VerdictClient,
-  args: { since?: string; slug?: string; limit?: number },
+  args: { since?: string; slug?: string; min_status?: IncidentTier; limit?: number },
 ): Promise<ToolResult> {
   let page: { items: Incident[]; total: number };
   try {
     page = await client.listIncidents({
       since: args.since,
       slug: args.slug,
+      min_status: args.min_status,
       limit: args.limit,
     });
   } catch (err) {
     return errorResult(friendlyError(err));
   }
 
+  // Only call the result "confirmed" when confirmed is all that was asked for.
+  // Omitting min_status inherits the server default, which is confirmed.
+  const askedForLeads =
+    args.min_status !== undefined && args.min_status !== "confirmed";
+  const noun = askedForLeads ? "hack incidents" : "confirmed hack incidents";
+
   if (page.items.length === 0) {
     const scope = args.slug ? ` for ${args.slug}` : "";
     const window = args.since ? ` since ${args.since}` : "";
-    return textResult(
-      `No confirmed hack incidents${scope}${window}. ${FEED_ATTRIB}`,
-    );
+    return textResult(`No ${noun}${scope}${window}. ${FEED_ATTRIB}`);
   }
 
   const header =
-    `${page.items.length} of ${page.total} confirmed hack incidents, newest first:`;
+    `${page.items.length} of ${page.total} ${noun}, newest first:`;
   const lines = page.items.map(renderIncident);
   const newest = page.items[0]?.detected_at;
   const footer = [

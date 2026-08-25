@@ -56,6 +56,18 @@ run("live smoke (real api)", () => {
     expect(r.isError).toBeFalsy();
   }, 20_000);
 
+  it("get_recent_incidents accepts min_status=corroborated", async () => {
+    // Proves the tiered backend is what we are talking to: the pre-v0.3 build
+    // ignored unknown query params, so this would have quietly returned the
+    // confirmed-only feed instead of a tiered one.
+    const r = await getRecentIncidents(client, {
+      min_status: "corroborated", limit: 5,
+    });
+    const text = r.content.map((c) => c.text ?? "").join("\n");
+    expect(r.isError).toBeFalsy();
+    expect(text).toContain("hack incidents");
+  }, 20_000);
+
   it("quantum_readiness(ethereum) returns a QRI line (LayerQu)", async () => {
     const r = await quantumReadiness(client, { chain: "ethereum" });
     const text = r.content.map((c) => c.text ?? "").join("\n");

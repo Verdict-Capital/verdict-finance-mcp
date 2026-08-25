@@ -100,7 +100,7 @@ export interface QuantumLeague {
 
 export type QuantumReadiness = QuantumChain | QuantumLeague;
 
-/** One confirmed hack incident from the public feed. */
+/** One hack incident from the public feed, at whatever tier it has reached. */
 export interface Incident {
   incident_id: string;
   protocol_name: string;
@@ -120,11 +120,19 @@ export interface Incident {
   resolution: string | null;
 }
 
+export type IncidentTier = "rumored" | "corroborated" | "confirmed";
+
 export interface IncidentParams {
   /** ISO datetime; only incidents detected after it. */
   since?: string;
   /** Exact Verdict slug of a rated protocol. */
   slug?: string;
+  /**
+   * Lowest confidence tier to return. Omit to inherit the server's default of
+   * confirmed: the parameter is only ever sent when a caller asks for it, so
+   * the default lives in one place rather than being mirrored here.
+   */
+  min_status?: IncidentTier;
   limit?: number;
 }
 
@@ -195,6 +203,7 @@ export class HttpVerdictClient implements VerdictClient {
     const qs = new URLSearchParams();
     if (params.since) qs.set("since", params.since);
     if (params.slug) qs.set("slug", params.slug);
+    if (params.min_status) qs.set("min_status", params.min_status);
     qs.set("limit", String(params.limit ?? 25));
     const body = await this.get<Partial<IncidentPage>>(`/incidents?${qs.toString()}`);
     return { items: body.items ?? [], total: body.total ?? 0 };
