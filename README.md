@@ -52,12 +52,13 @@ feeds a Verdict grade; chain ratings simply carry an extra LayerQu line when a
 reading is available.
 
 The incident feed carries hack incidents across DeFi (confirmed by default),
-including ones at protocols Verdict does not rate. Two things are worth knowing when reading
-it. Matching to a rated protocol happens when an incident is received, so an
-incident stored before its protocol was rated is never retroactively
-re-matched. And an incident is a signal to look, never an automatic downgrade:
-a matched entity may be flagged under review, but re-rating is always a human
-decision.
+including ones at protocols Verdict does not rate. Two things are worth
+knowing when reading it. Matching to a rated protocol happens when an incident
+is received, and re-runs when an incident escalates and its payload improves,
+so matched_protocol reads as of the incident's current tier. It is still never
+retroactive when Verdict's own coverage grows. And an incident is a signal to
+look, never an automatic downgrade: a matched entity may be flagged under
+review, but re-rating is always a human decision.
 
 ### Example prompts
 
