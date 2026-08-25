@@ -7,13 +7,13 @@
     "url": "https://github.com/Verdict-Capital/verdict-finance-mcp",
     "source": "github"
   },
-  "version": "0.3.1",
+  "version": "0.3.2",
   "websiteUrl": "https://www.verdict.finance",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "verdict-finance-mcp",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "transport": {
         "type": "stdio"
       }
@@ -21,7 +21,12 @@
   ],
   "_meta": {
     "io.modelcontextprotocol.registry/publisher-provided": {
-      "categories": ["finance", "security", "developer-tools", "data-analysis"],
+      "categories": [
+        "finance",
+        "security",
+        "developer-tools",
+        "data-analysis"
+      ],
       "documentation": "https://github.com/Verdict-Capital/verdict-finance-mcp#readme",
       "keywords": [
         "defi",
