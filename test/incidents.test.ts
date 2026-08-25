@@ -38,7 +38,7 @@ describe("get_recent_incidents tool", () => {
     expect(t).toContain("REENTRANCY");
     expect(t).toContain("~$6.0M");
     expect(t).toContain("5 sources");
-    expect(t).toContain("Confirmed hack feed by Verdict");
+    expect(t).toContain("Hack incident feed by Verdict");
   });
 
   it("dates the line by when it was first reported, not when confirmed", async () => {

@@ -9,8 +9,8 @@ call that layer directly.
 **Live today: Verdict Ratings.** Letter grade (AAA to D) plus a composite score
 (0 to 100) built from 300+ criteria across the full dependency graph, for
 protocols, chains, tokens, oracles, vaults, organisations and bridges. Plus
-post-quantum readiness for chains, and a live feed of confirmed DeFi hack
-incidents.
+post-quantum readiness for chains, and a live feed of DeFi hack incidents
+(confirmed by default).
 
 Keyless. It wraps Verdict's live anonymous API, so there is no signup and no
 API key. Each user runs it locally and queries from their own IP.
@@ -41,7 +41,7 @@ That is it. No key. (Requires Node 20+.)
 | `get_rating({ entity_type, identifier })` | Full free-tier rating for one entity, by slug (`aave-v4`, `ethereum`) or UUID. Includes dependency-drag provenance when it shaped the grade. |
 | `list_ratings({ entity_type, category?, chain?, limit? })` | Browse a set, best-rated first (default 25, cap 50). Category filters are lowercase, e.g. `lending`. |
 | `quantum_readiness({ chain? })` | Post-quantum cryptographic readiness for chains (QRI 0-100, readiness band, migration stage, hybrid-signature status), data by LayerQu. Omit `chain` for the full 72+ chain league table, including chains Verdict has not rated. |
-| `get_recent_incidents({ since?, slug?, limit? })` | Confirmed DeFi hack incidents, newest first (default 25, cap 200). Each is corroborated by more than one public hack-reporting source. Poll with `since`; filter to one rated protocol with `slug`. |
+| `get_recent_incidents({ since?, slug?, min_status?, limit? })` | DeFi hack incidents, newest first (default 25, cap 200). Confirmed by default; `min_status: 'corroborated'` opts into multi-source leads that have not yet reached confirmation. Each is corroborated by more than one public hack-reporting source. Poll with `since`; filter to one rated protocol with `slug`. |
 
 Every response ends with an attribution line linking back to the rating on
 verdict.finance.
@@ -51,8 +51,8 @@ Quantum-readiness data is provided by
 feeds a Verdict grade; chain ratings simply carry an extra LayerQu line when a
 reading is available.
 
-The incident feed carries confirmed hack incidents across DeFi, including ones
-at protocols Verdict does not rate. Two things are worth knowing when reading
+The incident feed carries hack incidents across DeFi (confirmed by default),
+including ones at protocols Verdict does not rate. Two things are worth knowing when reading
 it. Matching to a rated protocol happens when an incident is received, so an
 incident stored before its protocol was rated is never retroactively
 re-matched. And an incident is a signal to look, never an automatic downgrade:

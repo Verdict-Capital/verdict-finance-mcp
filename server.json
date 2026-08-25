@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.charles-verdict/verdict-finance-mcp",
   "title": "Verdict: DeFi ratings, quantum readiness and hack incidents",
-  "description": "Keyless DeFi risk ratings: live letter grades, quantum readiness and a confirmed hack feed.",
+  "description": "Keyless DeFi risk ratings: live letter grades, quantum readiness and a hack incident feed.",
   "repository": {
     "url": "https://github.com/Verdict-Capital/verdict-finance-mcp",
     "source": "github"
@@ -62,13 +62,13 @@
         },
         {
           "name": "get_recent_incidents",
-          "task": "Confirmed DeFi hack incidents, newest first, pollable with a since cursor"
+          "task": "DeFi hack incidents, newest first (confirmed by default), pollable with a since cursor"
         }
       ],
       "useCases": [
         "Check what Verdict rates a DeFi protocol before allocating to it",
         "Screen a portfolio's chains, oracles and bridges for dependency risk",
-        "Poll a confirmed hack feed to drive an agent's risk workflow"
+        "Poll a hack incident feed to drive an agent's risk workflow"
       ]
     }
   }

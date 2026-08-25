@@ -57,9 +57,11 @@ run("live smoke (real api)", () => {
   }, 20_000);
 
   it("get_recent_incidents accepts min_status=corroborated", async () => {
-    // Proves the tiered backend is what we are talking to: the pre-v0.3 build
-    // ignored unknown query params, so this would have quietly returned the
-    // confirmed-only feed instead of a tiered one.
+    // Exercises the tiered request shape end to end against the live API. It
+    // does NOT prove the tiered backend is deployed: an older build ignores an
+    // unknown query param and would pass this too. The deploy prover is the
+    // min_status=garbage 422 probe, which lives in the planner's verification
+    // rather than in this suite.
     const r = await getRecentIncidents(client, {
       min_status: "corroborated", limit: 5,
     });

@@ -4,7 +4,7 @@ import { errorResult, friendlyError, textResult, type ToolResult } from "../resp
 
 const MAX_LIMIT = 200;
 const FEED_ATTRIB =
-  "Confirmed hack feed by Verdict - https://www.verdict.finance/products/ratings";
+  "Hack incident feed by Verdict - https://www.verdict.finance/products/ratings";
 
 export const recentIncidentsInput = {
   since: z
