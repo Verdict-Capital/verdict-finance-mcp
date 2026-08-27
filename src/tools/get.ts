@@ -14,7 +14,7 @@ export const getRatingMeta = {
   name: "get_rating",
   title: "Get a Verdict rating",
   description:
-    "Get the full free-tier Verdict rating for one DeFi entity (letter grade + composite score 0-100 + public metadata). Identify it by slug (e.g. 'aave-v4') or UUID. Example: get_rating({ entity_type: 'protocol', identifier: 'aave-v4' }).",
+    "Get the Verdict rating for one DeFi entity: letter grade, composite score 0-100, and public metadata. Identify it by slug (e.g. 'aave-v4') or UUID. Keyless. For the per-domain scores behind the grade, use get_rating_breakdown. Example: get_rating({ entity_type: 'protocol', identifier: 'aave-v4' }).",
 };
 
 export async function getRating(

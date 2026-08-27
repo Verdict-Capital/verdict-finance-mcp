@@ -5,6 +5,7 @@ import { attribution, byGradeDesc, formatItem, type RatingItem } from "../format
 import { enrichWithRatings } from "../enrich.js";
 import { textResult, errorResult, friendlyError, type ToolResult } from "../respond.js";
 import { entityTypeSchema } from "../schema.js";
+import { IDENTITY } from "../identity.js";
 
 const PER_TYPE_LIMIT = 10;
 const MERGED_CAP = 15;
@@ -16,11 +17,14 @@ export const searchRatingsInput = {
     .describe("Optional: restrict to one entity type. Omit to search all 7 types at once."),
 } as const;
 
+// The identity clause opens THIS description and no other: search is the
+// discovery entry point an agent reaches first, and the same line repeated on
+// every tool is noise that crowds out each tool's contract.
 export const searchRatingsMeta = {
   name: "search_ratings",
   title: "Search Verdict ratings",
   description:
-    "Search Verdict's DeFi ratings by name or keyword across all 7 entity types (protocol, chain, token, oracle, vault, organisation, bridge). Pass entity_type to narrow the search. Returns matching entities with their letter grade + composite score. Example: search_ratings({ query: 'aave' }).",
+    `${IDENTITY} rates DeFi across 7 entity types: protocol, chain, token, oracle, vault, organisation, bridge. Search those ratings by name or keyword, and pass entity_type to narrow to one type. Returns matching entities with their letter grade + composite score. Example: search_ratings({ query: 'aave' }).`,
 };
 
 async function searchOne(
