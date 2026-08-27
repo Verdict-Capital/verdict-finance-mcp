@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // verdict-finance-mcp — Verdict ratings for AI agents, over MCP.
-// Local stdio transport; wraps the live anonymous Verdict API (no key needed).
+// Local stdio transport. Wraps the live Verdict API keylessly by default;
+// set VERDICT_API_KEY to authenticate and unlock the tier-gated depth reads.
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -11,12 +12,32 @@ import { searchRatings, searchRatingsInput, searchRatingsMeta } from "./tools/se
 import { listRatings, listRatingsInput, listRatingsMeta } from "./tools/list.js";
 import { quantumReadiness, quantumReadinessInput, quantumReadinessMeta } from "./tools/quantum.js";
 import { getRecentIncidents, recentIncidentsInput, recentIncidentsMeta } from "./tools/incidents.js";
+import { getMethodology, getMethodologyInput, getMethodologyMeta } from "./tools/methodology.js";
+import { getRatingBreakdown, getRatingBreakdownInput, getRatingBreakdownMeta } from "./tools/breakdown.js";
+import { requestCoverage, requestCoverageInput, requestCoverageMeta } from "./tools/coverage.js";
+import {
+  SERVER_DESCRIPTION,
+  SERVER_INSTRUCTIONS,
+  SERVER_TITLE,
+  SITE_URL,
+} from "./identity.js";
 
-const VERSION = "0.3.0";
+// Three-field release rule: this constant, package.json, and server.json move
+// together.
+const VERSION = "0.4.0";
 
 async function main(): Promise<void> {
   const client = new HttpVerdictClient();
-  const server = new McpServer({ name: "verdict-finance-mcp", version: VERSION });
+  const server = new McpServer(
+    {
+      name: "verdict-finance-mcp",
+      title: SERVER_TITLE,
+      version: VERSION,
+      description: SERVER_DESCRIPTION,
+      websiteUrl: SITE_URL,
+    },
+    { instructions: SERVER_INSTRUCTIONS },
+  );
 
   server.registerTool(
     searchRatingsMeta.name,
@@ -66,6 +87,36 @@ async function main(): Promise<void> {
       inputSchema: recentIncidentsInput,
     },
     (args) => getRecentIncidents(client, args),
+  );
+
+  server.registerTool(
+    getRatingBreakdownMeta.name,
+    {
+      title: getRatingBreakdownMeta.title,
+      description: getRatingBreakdownMeta.description,
+      inputSchema: getRatingBreakdownInput,
+    },
+    (args) => getRatingBreakdown(client, args),
+  );
+
+  server.registerTool(
+    getMethodologyMeta.name,
+    {
+      title: getMethodologyMeta.title,
+      description: getMethodologyMeta.description,
+      inputSchema: getMethodologyInput,
+    },
+    () => getMethodology(client),
+  );
+
+  server.registerTool(
+    requestCoverageMeta.name,
+    {
+      title: requestCoverageMeta.title,
+      description: requestCoverageMeta.description,
+      inputSchema: requestCoverageInput,
+    },
+    (args) => requestCoverage(client, args),
   );
 
   const transport = new StdioServerTransport();
