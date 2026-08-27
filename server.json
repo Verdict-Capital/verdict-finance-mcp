@@ -1,19 +1,19 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.charles-verdict/verdict-finance-mcp",
-  "title": "Verdict: DeFi ratings, quantum readiness and hack incidents",
-  "description": "Keyless DeFi risk ratings: live letter grades, quantum readiness and a hack incident feed.",
+  "title": "Verdict: the due-diligence house for DeFi",
+  "description": "Verdict, the due-diligence house for DeFi: keyless ratings, methodology and a hack incident feed.",
   "repository": {
     "url": "https://github.com/Verdict-Capital/verdict-finance-mcp",
     "source": "github"
   },
-  "version": "0.3.2",
+  "version": "0.4.0",
   "websiteUrl": "https://www.verdict.finance",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "verdict-finance-mcp",
-      "version": "0.3.2",
+      "version": "0.4.0",
       "transport": {
         "type": "stdio"
       }
@@ -41,7 +41,10 @@
         "oracles",
         "stablecoins",
         "vaults",
-        "due diligence"
+        "due diligence",
+        "audits",
+        "marketplace",
+        "methodology"
       ],
       "tools": [
         {
@@ -63,12 +66,25 @@
         {
           "name": "get_recent_incidents",
           "task": "DeFi hack incidents, newest first (confirmed by default), pollable with a since cursor"
+        },
+        {
+          "name": "get_methodology",
+          "task": "How a grade is produced: criteria counts and domains per entity type, and the AAA to D scale"
+        },
+        {
+          "name": "get_rating_breakdown",
+          "task": "Per-domain scores behind one entity's grade (needs VERDICT_API_KEY)"
+        },
+        {
+          "name": "request_coverage",
+          "task": "Ask Verdict to rate an entity it does not cover yet"
         }
       ],
       "useCases": [
         "Check what Verdict rates a DeFi protocol before allocating to it",
         "Screen a portfolio's chains, oracles and bridges for dependency risk",
-        "Poll a hack incident feed to drive an agent's risk workflow"
+        "Poll a hack incident feed to drive an agent's risk workflow",
+        "Explain a grade from the published methodology and its domain breakdown"
       ]
     }
   }
