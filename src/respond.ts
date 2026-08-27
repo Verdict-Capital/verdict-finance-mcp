@@ -26,6 +26,8 @@ export function friendlyError(err: unknown): string {
         return "Couldn't reach Verdict right now; try again.";
       case "not_found":
         return "Not found.";
+      case "unauthorized":
+        return "Verdict did not accept the API key in VERDICT_API_KEY for this request, or the key's plan does not include it. Check the key on your Verdict dashboard; plans at https://www.verdict.finance/pricing.";
       default:
         return "Something went wrong talking to Verdict; try again.";
     }

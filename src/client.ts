@@ -15,7 +15,13 @@ import { pluralOf, type EntityType } from "./entities.js";
 const DEFAULT_BASE = "https://api.verdict.finance/api/v1";
 const DEFAULT_TIMEOUT_MS = 10_000;
 
-export type VerdictErrorKind = "not_found" | "rate_limit" | "network" | "server" | "unknown";
+export type VerdictErrorKind =
+  | "not_found"
+  | "rate_limit"
+  | "network"
+  | "server"
+  | "unauthorized"
+  | "unknown";
 
 export class VerdictError extends Error {
   constructor(
@@ -42,7 +48,7 @@ export interface EntityRecord {
   categories?: string[];
 }
 
-/** The free-tier scorecard fields (domain breakdowns are stripped for anon). */
+/** The public scorecard fields (domain breakdowns come from getDomains). */
 export interface Rating {
   letter_grade: string | null;
   composite_score: number | null;
@@ -141,6 +147,71 @@ export interface IncidentPage {
   total: number;
 }
 
+/** The published methodology contract (anonymous route, no key needed). */
+export interface MethodologyEntityType {
+  type: string;
+  questions: number;
+  domains: string[];
+  domain_count: number;
+}
+
+export interface MethodologyGrade {
+  grade: string;
+  min_score: number;
+  description: string;
+}
+
+export interface Methodology {
+  name?: string;
+  version?: string;
+  total_questions?: number;
+  entity_types?: MethodologyEntityType[];
+  grade_scale?: MethodologyGrade[];
+  grade_rounding?: string;
+  attribution?: string;
+  methodology_url?: string;
+}
+
+/**
+ * Per-domain breakdown for one entity. This is a tier-gated route: it answers
+ * only for a caller carrying an API key of a tier that includes it. Fields are
+ * passed through as served, so a richer payload stays readable.
+ */
+export interface DomainBreakdown {
+  entity?: { slug?: string; name?: string };
+  composite_score?: number | null;
+  grade?: string | null;
+  letter_grade?: string | null;
+  intrinsic_composite_score?: number | null;
+  intrinsic_letter_grade?: string | null;
+  largest_drag_hint?: string | null;
+  has_unrated_dependencies?: boolean;
+  domain_scores?: Record<string, number> | null;
+  last_rated_at?: string | null;
+}
+
+/**
+ * A coverage request, as the public contacts endpoint takes it. `request_type`
+ * is "rating-request" for coverage: it is the same intent the "Get rated" form
+ * on verdict.finance submits, so these land in the same queue.
+ */
+export interface ContactSubmission {
+  protocol_name: string;
+  contact_email: string;
+  request_type: string;
+  message: string;
+}
+
+/** The receipt the contacts endpoint returns on a successful submission. */
+export interface ContactReceipt {
+  id?: string;
+  protocol_name?: string;
+  contact_email?: string;
+  request_type?: string;
+  status?: string;
+  created_at?: string;
+}
+
 export interface VerdictClient {
   listEntities(type: EntityType, params?: ListParams): Promise<EntityRecord[]>;
   getEntity(type: EntityType, identifier: string): Promise<EntityRecord>;
@@ -150,15 +221,39 @@ export interface VerdictClient {
   getQuantumReadiness(chainSlug?: string): Promise<QuantumReadiness>;
   /** Confirmed hack incidents, newest first. */
   listIncidents(params?: IncidentParams): Promise<IncidentPage>;
+  /** The published methodology contract. Anonymous. */
+  getMethodology(): Promise<Methodology>;
+  /** Per-domain breakdown for one entity. Needs a key (tier-gated route). */
+  getDomains(type: EntityType, slug: string): Promise<DomainBreakdown>;
+  /**
+   * Whether this client was given an API key. Tools that front a tier-gated
+   * route ask FIRST, so a keyless caller gets an answer instead of a 401.
+   */
+  hasApiKey(): boolean;
+  /** Submit a coverage request. Anonymous route, IP rate limited. */
+  submitContactRequest(body: ContactSubmission): Promise<ContactReceipt>;
 }
 
 export class HttpVerdictClient implements VerdictClient {
   private readonly base: string;
   private readonly timeoutMs: number;
+  /**
+   * Bring-your-own-key. Absent (the default) the client is exactly as keyless
+   * as it has always been; present it authenticates every call, which unlocks
+   * the tier-gated routes for that key's tier. The value is never logged,
+   * echoed, or rendered into any tool output.
+   */
+  private readonly apiKey: string | undefined;
 
-  constructor(opts: { base?: string; timeoutMs?: number } = {}) {
+  constructor(opts: { base?: string; timeoutMs?: number; apiKey?: string } = {}) {
     this.base = (opts.base ?? process.env.VERDICT_API_BASE ?? DEFAULT_BASE).replace(/\/+$/, "");
     this.timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+    const key = (opts.apiKey ?? process.env.VERDICT_API_KEY ?? "").trim();
+    this.apiKey = key.length > 0 ? key : undefined;
+  }
+
+  hasApiKey(): boolean {
+    return this.apiKey !== undefined;
   }
 
   async listEntities(type: EntityType, params: ListParams = {}): Promise<EntityRecord[]> {
@@ -209,7 +304,39 @@ export class HttpVerdictClient implements VerdictClient {
     return { items: body.items ?? [], total: body.total ?? 0 };
   }
 
+  async getMethodology(): Promise<Methodology> {
+    return this.get<Methodology>("/methodology");
+  }
+
+  async getDomains(type: EntityType, slug: string): Promise<DomainBreakdown> {
+    return this.get<DomainBreakdown>(
+      `/${pluralOf(type)}/${encodeURIComponent(slug)}/domains`,
+    );
+  }
+
+  /**
+   * Request headers. Keyless this is byte-for-byte what it has always been;
+   * with a key it gains the Bearer line and nothing else.
+   */
+  private headers(): Record<string, string> {
+    const headers: Record<string, string> = { accept: "application/json" };
+    if (this.apiKey) headers.authorization = `Bearer ${this.apiKey}`;
+    return headers;
+  }
+
+  async submitContactRequest(body: ContactSubmission): Promise<ContactReceipt> {
+    return this.request<ContactReceipt>("/contacts", {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: { ...this.headers(), "content-type": "application/json" },
+    });
+  }
+
   private async get<T>(path: string): Promise<T> {
+    return this.request<T>(path, {});
+  }
+
+  private async request<T>(path: string, init: RequestInit): Promise<T> {
     const url = `${this.base}${path}`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
@@ -217,7 +344,8 @@ export class HttpVerdictClient implements VerdictClient {
     try {
       res = await fetch(url, {
         signal: controller.signal,
-        headers: { accept: "application/json" },
+        headers: this.headers(),
+        ...init,
       });
     } catch {
       // Abort (timeout) or DNS/connection failure — indistinguishable and both
@@ -232,6 +360,11 @@ export class HttpVerdictClient implements VerdictClient {
     }
     if (res.status === 429) {
       throw new VerdictError("rate_limit", "429 rate limited");
+    }
+    if (res.status === 401 || res.status === 403) {
+      // Only reachable on a tier-gated route: either no key travelled, or the
+      // key's tier does not include it. The key itself is never in the message.
+      throw new VerdictError("unauthorized", `${res.status} for ${path}`);
     }
     if (res.status >= 500) {
       throw new VerdictError("server", `Verdict returned ${res.status}`);

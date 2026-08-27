@@ -1,7 +1,7 @@
-import { VerdictError, type EntityRecord, type IncidentPage, type IncidentParams, type QuantumReadiness, type Rating, type VerdictClient, type ListParams } from "../src/client.js";
+import { VerdictError, type ContactReceipt, type ContactSubmission, type DomainBreakdown, type EntityRecord, type IncidentPage, type IncidentParams, type Methodology, type QuantumReadiness, type Rating, type VerdictClient, type ListParams } from "../src/client.js";
 import type { EntityType } from "../src/entities.js";
 
-type Kind = "not_found" | "rate_limit" | "network" | "server" | "unknown";
+type Kind = "not_found" | "rate_limit" | "network" | "server" | "unauthorized" | "unknown";
 
 /**
  * In-memory VerdictClient for unit tests. Seed entities + ratings; optionally
@@ -12,10 +12,56 @@ export class FakeClient implements VerdictClient {
   ratings: Record<string, Rating | null> = {};
   quantum: QuantumReadiness = { available: false };
   incidents: IncidentPage = { items: [], total: 0 };
-  throwOn: Partial<Record<"list" | "get" | "rating" | "quantum" | "incidents", Kind>> = {};
-  calls = { list: 0, get: 0, rating: 0, quantum: 0, incidents: 0 };
+  methodology: Methodology = {};
+  domains: DomainBreakdown = {};
+  contactReceipt: ContactReceipt = { id: "contact-1", status: "new" };
+  /** Whether this fake is standing in for a keyed client. */
+  apiKey = false;
+  throwOn: Partial<
+    Record<
+      | "list"
+      | "get"
+      | "rating"
+      | "quantum"
+      | "incidents"
+      | "methodology"
+      | "domains"
+      | "contact",
+      Kind
+    >
+  > = {};
+  calls = {
+    list: 0, get: 0, rating: 0, quantum: 0, incidents: 0,
+    methodology: 0, domains: 0, contact: 0,
+  };
   lastListParams: ListParams | undefined;
   lastIncidentParams: IncidentParams | undefined;
+  lastDomainsArgs: { type: EntityType; slug: string } | undefined;
+  lastContactSubmission: ContactSubmission | undefined;
+
+  hasApiKey(): boolean {
+    return this.apiKey;
+  }
+
+  async getMethodology(): Promise<Methodology> {
+    this.calls.methodology++;
+    if (this.throwOn.methodology) throw new VerdictError(this.throwOn.methodology, "forced");
+    return this.methodology;
+  }
+
+  async getDomains(type: EntityType, slug: string): Promise<DomainBreakdown> {
+    this.calls.domains++;
+    this.lastDomainsArgs = { type, slug };
+    if (this.throwOn.domains) throw new VerdictError(this.throwOn.domains, "forced");
+    return this.domains;
+  }
+
+  async submitContactRequest(body: ContactSubmission): Promise<ContactReceipt> {
+    this.calls.contact++;
+    this.lastContactSubmission = body;
+    if (this.throwOn.contact) throw new VerdictError(this.throwOn.contact, "forced");
+    return this.contactReceipt;
+  }
 
   async listEntities(type: EntityType, params: ListParams = {}): Promise<EntityRecord[]> {
     this.calls.list++;
