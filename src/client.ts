@@ -11,6 +11,7 @@
 // some scorecard routes accept a slug, others require the id).
 
 import { pluralOf, type EntityType } from "./entities.js";
+import { VERSION } from "./version.js";
 
 const DEFAULT_BASE = "https://api.verdict.finance/api/v1";
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -315,11 +316,16 @@ export class HttpVerdictClient implements VerdictClient {
   }
 
   /**
-   * Request headers. Keyless this is byte-for-byte what it has always been;
-   * with a key it gains the Bearer line and nothing else.
+   * Request headers. Every call names this client and its version so the API's
+   * request log can tell MCP traffic from the rest (spec
+   * 2026-09-18-api-usage-digest); with a key it gains the Bearer line and
+   * nothing else.
    */
   private headers(): Record<string, string> {
-    const headers: Record<string, string> = { accept: "application/json" };
+    const headers: Record<string, string> = {
+      accept: "application/json",
+      "user-agent": `verdict-finance-mcp/${VERSION}`,
+    };
     if (this.apiKey) headers.authorization = `Bearer ${this.apiKey}`;
     return headers;
   }

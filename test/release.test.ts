@@ -1,6 +1,6 @@
 // The three-field release rule: package.json, server.json and the VERSION
-// constant move together. Also guards the manifests against tool-surface and
-// description drift.
+// constant (src/version.ts) move together. Also guards the manifests against
+// tool-surface and description drift.
 
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -18,7 +18,7 @@ import { requestCoverageMeta } from "../src/tools/coverage.js";
 const root = (p: string) => fileURLToPath(new URL(`../${p}`, import.meta.url));
 const pkg = JSON.parse(readFileSync(root("package.json"), "utf8"));
 const server = JSON.parse(readFileSync(root("server.json"), "utf8"));
-const indexSrc = readFileSync(root("src/index.ts"), "utf8");
+const versionSrc = readFileSync(root("src/version.ts"), "utf8");
 const publisher = server._meta["io.modelcontextprotocol.registry/publisher-provided"];
 
 const TOOL_NAMES = [
@@ -34,7 +34,7 @@ const TOOL_NAMES = [
 
 describe("release fields", () => {
   it("carries the same version in all three places", () => {
-    const inSource = indexSrc.match(/const VERSION = "([^"]+)"/)?.[1];
+    const inSource = versionSrc.match(/export const VERSION = "([^"]+)"/)?.[1];
     expect(inSource).toBe(pkg.version);
     expect(server.version).toBe(pkg.version);
     expect(server.packages[0].version).toBe(pkg.version);

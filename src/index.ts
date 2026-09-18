@@ -21,10 +21,7 @@ import {
   SERVER_TITLE,
   SITE_URL,
 } from "./identity.js";
-
-// Three-field release rule: this constant, package.json, and server.json move
-// together.
-const VERSION = "0.4.0";
+import { VERSION } from "./version.js";
 
 async function main(): Promise<void> {
   const client = new HttpVerdictClient();

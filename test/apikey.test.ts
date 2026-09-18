@@ -1,8 +1,9 @@
 // Bring-your-own-key: VERDICT_API_KEY present authenticates every call;
-// absent, the client is byte-for-byte the keyless client it has always been.
+// absent, the client sends its accept header and its own user agent, nothing else.
 
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import { HttpVerdictClient } from "../src/client.js";
+import { VERSION } from "../src/version.js";
 
 function mockFetch(status: number, body: unknown) {
   return vi.fn(async () =>
@@ -19,6 +20,7 @@ function headersOf(fetchMock: ReturnType<typeof mockFetch>): Record<string, stri
 }
 
 const KEY = "vk_live_secret_value";
+const UA = `verdict-finance-mcp/${VERSION}`;
 
 beforeEach(() => {
   delete process.env.VERDICT_API_KEY;
@@ -30,11 +32,11 @@ afterEach(() => {
 });
 
 describe("keyless (the default)", () => {
-  it("sends exactly the accept header, and nothing else", async () => {
+  it("sends the accept header and its own user agent, and nothing else", async () => {
     const fetchMock = mockFetch(200, { items: [] });
     vi.stubGlobal("fetch", fetchMock);
     await new HttpVerdictClient({ base: "https://x.test" }).listEntities("protocol");
-    expect(headersOf(fetchMock)).toEqual({ accept: "application/json" });
+    expect(headersOf(fetchMock)).toEqual({ accept: "application/json", "user-agent": UA });
   });
 
   it("reports no key", () => {
@@ -48,7 +50,11 @@ describe("keyless (the default)", () => {
     const c = new HttpVerdictClient({ base: "https://x.test" });
     await c.listEntities("chain");
     expect(c.hasApiKey()).toBe(false);
-    expect(headersOf(fetchMock)).toEqual({ accept: "application/json" });
+    expect(headersOf(fetchMock)).toEqual({ accept: "application/json", "user-agent": UA });
+  });
+
+  it("names its version in the user agent", () => {
+    expect(UA).toMatch(/^verdict-finance-mcp\/\d+\.\d+\.\d+$/);
   });
 });
 
@@ -61,6 +67,7 @@ describe("keyed (VERDICT_API_KEY set)", () => {
     await c.listEntities("protocol");
     expect(c.hasApiKey()).toBe(true);
     expect(headersOf(fetchMock).authorization).toBe(`Bearer ${KEY}`);
+    expect(headersOf(fetchMock)["user-agent"]).toBe(UA);
   });
 
   it("trims a key pasted with surrounding whitespace", async () => {
