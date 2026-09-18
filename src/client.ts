@@ -73,7 +73,7 @@ export interface QuantumRow {
   band: number;
   band_label: string;
   hybrid?: string;
-  danger?: boolean;
+  danger?: boolean | null;
   ci?: number | null;
   matched_chain_slug?: string | null;
 }
@@ -90,7 +90,7 @@ export interface QuantumChain {
   band_label?: string;
   stage?: number;
   hybrid?: string;
-  danger?: boolean;
+  danger?: boolean | null;
   ci?: number | null;
 }
 

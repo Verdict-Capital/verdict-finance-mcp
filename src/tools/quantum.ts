@@ -48,7 +48,8 @@ export async function quantumReadiness(
     if (!head) return unavailable(q.reason);
     const lines = [head];
     if (q.hybrid) lines.push(`Hybrid signatures: ${q.hybrid}`);
-    lines.push(`Danger flag: ${q.danger ? "yes" : "no"}`);
+    // LayerQu methodology v3.2.2 (2026-08-31) stopped publishing the flag: a null is unknown, not "no".
+    if (q.danger != null) lines.push(`Danger flag: ${q.danger ? "yes" : "no"}`);
     if (q.ci != null) lines.push(`CI: ${q.ci}`);
     lines.push(LAYERQU_ATTRIB);
     return textResult(lines.join("\n"));

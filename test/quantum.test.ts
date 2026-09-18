@@ -20,8 +20,21 @@ describe("quantum_readiness tool", () => {
     expect(t).toContain("Band 2 Acknowledged");
     expect(t).toContain("Stage S2");
     expect(t).toContain("Hybrid signatures: FAIL");
+    expect(t).toContain("Danger flag: no");
     expect(t).toContain("Data: LayerQu - https://layerqu.com/dashboard/");
     expect(r.isError).toBeFalsy();
+  });
+
+  it("omits the danger line when the source no longer publishes the flag", async () => {
+    const c = new FakeClient();
+    c.quantum = {
+      available: true, chain_slug: "ethereum", qri: 25, band: 2,
+      band_label: "Acknowledged", stage: 2, hybrid: "FAIL", danger: null,
+      ci: 4, source: "LayerQu", source_url: "https://layerqu.com/dashboard/",
+    };
+    const t = text(await quantumReadiness(c, { chain: "ethereum" }));
+    expect(t).toContain("Hybrid signatures: FAIL");
+    expect(t).not.toContain("Danger flag");
   });
 
   it("renders the league table without a chain arg (all rows)", async () => {
