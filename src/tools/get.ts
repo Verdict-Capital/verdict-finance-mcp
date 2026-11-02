@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { EntityType } from "../entities.js";
 import { VerdictError, type VerdictClient } from "../client.js";
-import { attribution, deepLink, detailLines, formatItem, quantumReadinessLine, toRatingItem } from "../format.js";
+import { attribution, deepLink, detailLines, formatItem, layerquAttribution, quantumReadinessLine, toRatingItem } from "../format.js";
 import { textResult, errorResult, friendlyError, type ToolResult } from "../respond.js";
 import { entityTypeSchema } from "../schema.js";
 
@@ -31,8 +31,9 @@ export async function getRating(
       // Companion quantum-readiness line. A quantum lookup failure must NEVER
       // break a rating response, so it is fully isolated.
       try {
-        const ql = quantumReadinessLine(await client.getQuantumReadiness(entity.slug));
-        if (ql) lines.push(ql);
+        const q = await client.getQuantumReadiness(entity.slug);
+        const ql = quantumReadinessLine(q);
+        if (ql) lines.push(ql, layerquAttribution(q));
       } catch {
         // swallow - no quantum line, rating stands
       }

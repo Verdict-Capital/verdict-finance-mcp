@@ -70,10 +70,12 @@ describe("get_rating", () => {
     c.entities.chain = [entity({ id: "c1", name: "Ethereum", slug: "ethereum" })];
     c.ratings.c1 = { letter_grade: "A", composite_score: 80 };
     c.quantum = { available: true, chain_slug: "ethereum", qri: 25, band: 2,
-      band_label: "Acknowledged", stage: 2, hybrid: "FAIL", danger: false, ci: 4 };
+      band_label: "Acknowledged", stage: 2, hybrid: "FAIL", danger: false, ci: 4,
+      as_of: "2026-11-02T08:00:00+00:00" };
     const r = await getRating(c, { entity_type: "chain", identifier: "ethereum" });
     const t = text(r);
     expect(t).toContain("Quantum readiness (LayerQu): QRI 25/100 - Band 2 Acknowledged - Stage S2");
+    expect(t).toContain("Data: LayerQu - https://layerqu.com/dashboard/ - as of 2026-11-02T08:00:00+00:00");
     expect(r.isError).toBeFalsy();
   });
 

@@ -94,6 +94,18 @@ export function attribution(link: string = RATINGS): string {
 }
 
 /**
+ * The LayerQu attribution line every quantum payload carries (data licence
+ * clauses 3.2 and 5.2): source, link, the as-of time and, when a refresh
+ * failed, the stale marking. Plain hyphens only.
+ */
+export function layerquAttribution(q?: { as_of?: string; stale?: boolean }): string {
+  let line = "Data: LayerQu - https://layerqu.com/dashboard/";
+  if (q?.as_of) line += ` - as of ${q.as_of}`;
+  if (q?.stale) line += " - stale: the last refresh failed, this is the most recent copy";
+  return line;
+}
+
+/**
  * The one-line quantum-readiness summary shared by get_rating (chains) and the
  * quantum_readiness tool's per-chain detail. Returns null when the source has
  * no assessment for the chain (available:false or missing score fields), so

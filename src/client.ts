@@ -85,6 +85,10 @@ export interface QuantumChain {
   reason?: string;
   source?: string;
   source_url?: string;
+  /** When Verdict last read the data from LayerQu (ISO 8601). */
+  as_of?: string;
+  /** True when a refresh failed and an expired copy is served. */
+  stale?: boolean;
   chain_slug?: string;
   qri?: number;
   band?: number;
@@ -101,6 +105,8 @@ export interface QuantumLeague {
   reason?: string;
   source?: string;
   source_url?: string;
+  as_of?: string;
+  stale?: boolean;
   rows?: QuantumRow[];
   rows_skipped?: number;
 }

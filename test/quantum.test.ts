@@ -13,6 +13,7 @@ describe("quantum_readiness tool", () => {
       available: true, chain_slug: "ethereum", qri: 25, band: 2,
       band_label: "Acknowledged", stage: 2, hybrid: "FAIL", danger: false,
       ci: 4, source: "LayerQu", source_url: "https://layerqu.com/dashboard/",
+      as_of: "2026-11-02T08:00:00+00:00",
     };
     const r = await quantumReadiness(c, { chain: "ethereum" });
     const t = text(r);
@@ -21,8 +22,22 @@ describe("quantum_readiness tool", () => {
     expect(t).toContain("Stage S2");
     expect(t).toContain("Hybrid signatures: FAIL");
     expect(t).toContain("Danger flag: no");
-    expect(t).toContain("Data: LayerQu - https://layerqu.com/dashboard/");
+    expect(t).toContain("Data: LayerQu - https://layerqu.com/dashboard/ - as of 2026-11-02T08:00:00+00:00");
+    expect(t).not.toContain("stale");
     expect(r.isError).toBeFalsy();
+  });
+
+  it("marks a stale per-chain payload", async () => {
+    const c = new FakeClient();
+    c.quantum = {
+      available: true, chain_slug: "ethereum", qri: 25, band: 2,
+      band_label: "Acknowledged", stage: 2, hybrid: "FAIL", danger: null,
+      ci: 4, as_of: "2026-11-01T08:00:00+00:00", stale: true,
+    };
+    const t = text(await quantumReadiness(c, { chain: "ethereum" }));
+    expect(t).toContain(
+      "Data: LayerQu - https://layerqu.com/dashboard/ - as of 2026-11-01T08:00:00+00:00 - stale: the last refresh failed, this is the most recent copy",
+    );
   });
 
   it("omits the danger line when the source no longer publishes the flag", async () => {
@@ -51,12 +66,15 @@ describe("quantum_readiness tool", () => {
       ],
       rows_skipped: 0, source: "LayerQu",
       source_url: "https://layerqu.com/dashboard/",
+      as_of: "2026-11-02T08:00:00+00:00", stale: true,
     };
     const r = await quantumReadiness(c, {});
     const t = text(r);
     expect(t).toContain("Ethereum - QRI 25 - Band 2 Acknowledged - S2");
     expect(t).toContain("Abelian - QRI 55 - Band 6 Transitioning - S3");
-    expect(t).toContain("Data: LayerQu - https://layerqu.com/dashboard/");
+    expect(t).toContain(
+      "Data: LayerQu - https://layerqu.com/dashboard/ - as of 2026-11-02T08:00:00+00:00 - stale: the last refresh failed, this is the most recent copy",
+    );
     expect(r.isError).toBeFalsy();
   });
 

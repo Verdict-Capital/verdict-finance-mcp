@@ -1,10 +1,7 @@
 import { z } from "zod";
 import type { QuantumChain, QuantumLeague, VerdictClient } from "../client.js";
-import { quantumReadinessLine } from "../format.js";
+import { layerquAttribution, quantumReadinessLine } from "../format.js";
 import { textResult, type ToolResult } from "../respond.js";
-
-// The dedicated tool attributes LayerQu on its own line (plain hyphens).
-const LAYERQU_ATTRIB = "Data: LayerQu - https://layerqu.com/dashboard/";
 
 export const quantumReadinessInput = {
   chain: z
@@ -22,7 +19,7 @@ export const quantumReadinessMeta = {
 
 function unavailable(reason?: string): ToolResult {
   const why = reason ? ` (${reason})` : "";
-  return textResult(`Quantum readiness is unavailable right now${why}. ${LAYERQU_ATTRIB}`);
+  return textResult(`Quantum readiness is unavailable right now${why}. ${layerquAttribution()}`);
 }
 
 export async function quantumReadiness(
@@ -51,7 +48,7 @@ export async function quantumReadiness(
     // LayerQu methodology v3.2.2 (2026-08-31) stopped publishing the flag: a null is unknown, not "no".
     if (q.danger != null) lines.push(`Danger flag: ${q.danger ? "yes" : "no"}`);
     if (q.ci != null) lines.push(`CI: ${q.ci}`);
-    lines.push(LAYERQU_ATTRIB);
+    lines.push(layerquAttribution(q));
     return textResult(lines.join("\n"));
   }
 
@@ -61,5 +58,5 @@ export async function quantumReadiness(
   const body = rows.map(
     (r) => `${r.name} - QRI ${r.qri} - Band ${r.band} ${r.band_label} - S${r.stage}`,
   );
-  return textResult([header, ...body, LAYERQU_ATTRIB].join("\n"));
+  return textResult([header, ...body, layerquAttribution(league)].join("\n"));
 }
