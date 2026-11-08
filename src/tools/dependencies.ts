@@ -57,20 +57,24 @@ function headline(node: GraphNode): string {
   return line;
 }
 
-/** One link, named by the node at its other end. */
-function linkLine(other: GraphNode, edge: GraphEdge): string {
+/**
+ * One link, named by the node at its other end. The rank note rides only on a
+ * Depends on line: an edge's rank drag describes its target, which on a
+ * Depended on by line is the entity looked up, not the dependant named.
+ */
+function linkLine(other: GraphNode, edge: GraphEdge, rankNote: boolean): string {
   const label = other.private
     ? nameOf(other)
     : `${nameOf(other)} (${[other.type, other.grade ?? "not rated", flag(other)].filter(Boolean).join(", ")})`;
   let line = `- ${label}: ${words(edge.type)}, ${edge.criticality}`;
-  if (edge.rank_drag > 0) {
+  if (rankNote && edge.rank_drag > 0) {
     line += `, ${edge.rank_drag} rank${edge.rank_drag === 1 ? "" : "s"} below B`;
   }
   return line;
 }
 
 /** Critical, important, minor; then by name. */
-function linkLines(links: Array<{ other: GraphNode; edge: GraphEdge }>): string[] {
+function linkLines(links: Array<{ other: GraphNode; edge: GraphEdge }>, rankNote: boolean): string[] {
   const rank = (c: string) => {
     const i = CRITICALITY.indexOf(c);
     return i === -1 ? CRITICALITY.length : i;
@@ -79,7 +83,7 @@ function linkLines(links: Array<{ other: GraphNode; edge: GraphEdge }>): string[
     .sort((a, b) =>
       rank(a.edge.criticality) - rank(b.edge.criticality) ||
       nameOf(a.other).localeCompare(nameOf(b.other)))
-    .map(({ other, edge }) => linkLine(other, edge));
+    .map(({ other, edge }) => linkLine(other, edge, rankNote));
 }
 
 /** "BBB 72.92" | "BBB" | "not rated". */
@@ -132,9 +136,9 @@ export async function getDependencies(
     .slice(0, MAX_MOVES);
 
   const lines = [headline(node)];
-  if (out.length) lines.push("Depends on:", ...linkLines(out));
+  if (out.length) lines.push("Depends on:", ...linkLines(out, true));
   else lines.push("No dependencies recorded.");
-  if (into.length) lines.push("Depended on by:", ...linkLines(into));
+  if (into.length) lines.push("Depended on by:", ...linkLines(into, false));
   else lines.push("Nothing Verdict rates depends on it.");
   if (moves.length) lines.push("Recent grade moves:", ...moves.map(moveLine));
   else lines.push("No grade moves recorded.");

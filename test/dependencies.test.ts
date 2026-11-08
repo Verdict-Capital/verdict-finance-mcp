@@ -108,6 +108,28 @@ describe("get_dependencies", () => {
     ].join("\n"));
   });
 
+  it("puts the rank note on a Depends on line only, never on a Depended on by line", async () => {
+    // One dragged edge in each list. Plasma's own drag on syrupUSDT describes
+    // Plasma, the entity looked up, so the syrupUSDT line carries no note.
+    const c = new FakeClient();
+    c.graph = {
+      nodes: [
+        node({ id: "chain:plasma", type: "chain", name: "Plasma", grade: "CCC", composite: 41.3 }),
+        node({ id: "bridge:weak-bridge", type: "bridge", name: "Weak Bridge", grade: "CCC", composite: 40.2 }),
+        node({ id: "vault:syrupusdt", type: "vault", name: "syrupUSDT", grade: "BBB", composite: 73.48 }),
+      ],
+      edges: [
+        edge("chain:plasma", "bridge:weak-bridge", "bridges_via", "important", 1),
+        edge("vault:syrupusdt", "chain:plasma", "runs_on", "important", 1),
+      ],
+    };
+    const t = text(await getDependencies(c, { entity_type: "chain", slug: "plasma" }));
+    expect(t).toContain("Depends on:\n- Weak Bridge (bridge, CCC): bridges via, important, 1 rank below B\n");
+    expect(t).toContain("Depended on by:\n- syrupUSDT (vault, BBB): runs on, important\n");
+    const dependants = t.slice(t.indexOf("Depended on by:"));
+    expect(dependants).not.toContain("rank below B");
+  });
+
   it("marks a withdrawn node without a date, since the graph has none", async () => {
     const c = new FakeClient();
     c.graph = syrupGraph();
