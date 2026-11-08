@@ -99,6 +99,7 @@ review, but re-rating is always a human decision.
 - *"Any DeFi hacks this week?"* runs `get_recent_incidents({ limit: 10 })`
 - *"How does Verdict score a bridge?"* runs `get_methodology({})`
 - *"What dragged Aave's grade down?"* runs `get_rating_breakdown({ entity_type: "protocol", slug: "aave-v4" })`
+- *"What does syrupUSDT depend on?"* runs `get_dependencies({ entity_type: "vault", slug: "syrupusdt" })`
 - *"Get my protocol rated."* runs `request_coverage({ entity_name: "...", entity_type: "protocol", contact_email: "..." })`
 
 ### Example output
