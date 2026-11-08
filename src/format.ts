@@ -70,11 +70,11 @@ function ratingBadge(grade: string | null, composite: number | null): string {
 
 /**
  * One line per item, e.g.
- * `Aave V4 — A (87/100) · protocol · chains: ethereum, base · <link>`
+ * `Aave V4: A (87/100) · protocol · chains: ethereum, base · <link>`
  */
 export function formatItem(item: RatingItem, opts: { categories?: boolean } = {}): string {
   const parts = [
-    `${item.name} — ${ratingBadge(item.grade, item.composite)}`,
+    `${item.name}: ${ratingBadge(item.grade, item.composite)}`,
     item.entityType,
   ];
   if (item.chains.length) parts.push(`chains: ${item.chains.join(", ")}`);
@@ -90,7 +90,7 @@ export function formatItem(item: RatingItem, opts: { categories?: boolean } = {}
  * link for a single result, or the ratings page for a list.
  */
 export function attribution(link: string = RATINGS): string {
-  return `Rating by Verdict — ${link} · Methodology + deeper analysis at ${SITE}`;
+  return `Rating by Verdict: ${link}`;
 }
 
 /**

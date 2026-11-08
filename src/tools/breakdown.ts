@@ -4,7 +4,7 @@ import { VerdictError, type DomainBreakdown, type VerdictClient } from "../clien
 import { attribution, deepLink } from "../format.js";
 import { errorResult, friendlyError, textResult, type ToolResult } from "../respond.js";
 import { entityTypeSchema } from "../schema.js";
-import { PRICING_URL } from "../identity.js";
+import { KEYS_URL } from "../identity.js";
 
 /**
  * What a keyless caller gets. It is a normal answer, never an error: an agent
@@ -12,7 +12,7 @@ import { PRICING_URL } from "../identity.js";
  * handed a failure it has to interpret. Pinned by test.
  */
 export const KEYLESS_ANSWER = [
-  `Per-domain breakdowns need a Verdict API key: set VERDICT_API_KEY in this server's environment (keys come from the Verdict dashboard, plans at ${PRICING_URL}), then ask again.`,
+  `Per-domain breakdowns need a free Verdict API key: sign in at ${KEYS_URL}, make a key, set VERDICT_API_KEY in this server's environment, then ask again.`,
   "Everything else here stays keyless. get_rating returns this entity's letter grade and composite score with no key at all, and get_methodology explains what the domains measure.",
 ].join("\n");
 

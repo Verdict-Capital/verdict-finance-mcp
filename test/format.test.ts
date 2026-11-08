@@ -18,14 +18,14 @@ describe("deepLink", () => {
 });
 
 describe("attribution", () => {
-  it("ends with the methodology funnel and uses the given link", () => {
+  it("is one plain credit line with the given link", () => {
     const link = deepLink("chain", "ethereum");
     expect(attribution(link)).toBe(
-      `Rating by Verdict — ${link} · Methodology + deeper analysis at https://www.verdict.finance`,
+      "Rating by Verdict: https://www.verdict.finance/products/ratings#chain-ethereum",
     );
   });
   it("defaults to the ratings page when no link is given", () => {
-    expect(attribution()).toContain("https://www.verdict.finance/products/ratings ·");
+    expect(attribution()).toBe("Rating by Verdict: https://www.verdict.finance/products/ratings");
   });
 });
 
@@ -44,7 +44,7 @@ describe("formatItem", () => {
 
   it("renders a rated item with grade, score, chains and link", () => {
     expect(formatItem(base)).toBe(
-      "Aave V4 — A (87/100) · protocol · chains: ethereum, base · https://www.verdict.finance/products/ratings#protocol-aave",
+      "Aave V4: A (87/100) · protocol · chains: ethereum, base · https://www.verdict.finance/products/ratings#protocol-aave",
     );
   });
 
@@ -54,7 +54,7 @@ describe("formatItem", () => {
 
   it("renders 'unrated' when grade and composite are null", () => {
     const line = formatItem({ ...base, grade: null, composite: null });
-    expect(line).toContain("Aave V4 — unrated · protocol");
+    expect(line).toContain("Aave V4: unrated · protocol");
   });
 
   it("omits the chains segment when there are none", () => {

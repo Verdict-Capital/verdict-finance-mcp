@@ -19,7 +19,7 @@ describe("list_ratings", () => {
     const r = await listRatings(c, { entity_type: "vault" });
     const t = text(r);
     expect(t.indexOf("High Vault")).toBeLessThan(t.indexOf("Low Vault"));
-    expect(t).toContain("Rating by Verdict —");
+    expect(t).toContain("Rating by Verdict: https://www.verdict.finance/products/ratings");
   });
 
   it("caps the limit at 50", async () => {

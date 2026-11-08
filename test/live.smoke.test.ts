@@ -26,7 +26,7 @@ run("live smoke (real api)", () => {
     const r = await listRatings(client, { entity_type: "protocol", limit: 5 });
     const text = r.content.map((c) => c.text ?? "").join("\n");
     expect(r.isError).toBeFalsy();
-    expect(text).toContain("Rating by Verdict —");
+    expect(text).toContain("Rating by Verdict: https://www.verdict.finance/products/ratings");
   }, 20_000);
 
   it("searches across all 7 types", async () => {
@@ -44,7 +44,7 @@ run("live smoke (real api)", () => {
       const r = await getRating(client, { entity_type, identifier });
       const text = r.content.map((c) => c.text ?? "").join("\n");
       expect(r.isError).toBeFalsy();
-      expect(text).toContain("Rating by Verdict —");
+      expect(text).toContain("Rating by Verdict: https://www.verdict.finance/products/ratings");
     }, 20_000);
   }
 
@@ -111,7 +111,7 @@ run("live smoke (real api)", () => {
     const text = r.content.map((c) => c.text ?? "").join("\n");
     expect(r.isError).toBeFalsy();
     expect(text).toContain("Domain scores");
-    expect(text).toContain("Rating by Verdict —");
+    expect(text).toContain("Rating by Verdict: https://www.verdict.finance/products/ratings");
   }, 20_000);
 
   it("quantum_readiness(ethereum) returns a QRI line (LayerQu)", async () => {

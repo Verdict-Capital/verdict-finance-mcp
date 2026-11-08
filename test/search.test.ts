@@ -13,7 +13,7 @@ describe("search_ratings", () => {
     c.ratings.p1 = { letter_grade: "A", composite_score: 87 };
 
     const r = await searchRatings(c, { query: "aave", entity_type: "protocol" });
-    expect(text(r)).toContain("Aave V4 — A (87/100) · protocol");
+    expect(text(r)).toContain("Aave V4: A (87/100) · protocol");
     expect(c.calls.list).toBe(1); // only the one type queried
   });
 
@@ -44,7 +44,7 @@ describe("search_ratings", () => {
     const c = new FakeClient();
     c.throwOn.list = "rate_limit";
     const r = await searchRatings(c, { query: "aave", entity_type: "protocol" });
-    expect(text(r)).toContain("Verdict rate limit reached");
+    expect(text(r)).toBe("Verdict's rate limit was reached; try again shortly.");
     expect(r.isError).toBe(true);
   });
 
@@ -66,7 +66,7 @@ describe("search_ratings", () => {
     // p2 has no rating entry -> getLatestRating returns null -> unrated
     const r = await searchRatings(c, { query: "aave", entity_type: "protocol" });
     const t = text(r);
-    expect(t).toContain("Aave V4 — A (90/100)");
-    expect(t).toContain("Aave V2 — unrated");
+    expect(t).toContain("Aave V4: A (90/100)");
+    expect(t).toContain("Aave V2: unrated");
   });
 });

@@ -21,7 +21,6 @@ export const SERVER_TITLE = "Verdict: DeFi risk ratings";
 export const SITE_URL = "https://www.verdict.finance";
 export const KEYS_URL = "https://www.verdict.finance/dashboard/keys";
 export const TERMS_URL = "https://www.verdict.finance/legal/terms#api-usage";
-export const PRICING_URL = "https://www.verdict.finance/pricing";
 
 /**
  * Server instructions: the orientation an agent reads once, before it picks a

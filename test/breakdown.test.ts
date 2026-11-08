@@ -26,14 +26,16 @@ function text(r: { content: Array<{ text?: string }> }): string {
 }
 
 describe("get_rating_breakdown without a key", () => {
-  it("answers, never errors, and points at VERDICT_API_KEY and pricing", async () => {
+  it("answers, never errors, and points at VERDICT_API_KEY and the keys page", async () => {
     const c = new FakeClient();
     c.apiKey = false;
     const r = await getRatingBreakdown(c, { entity_type: "protocol", slug: "aave-v4" });
     expect(r.isError).toBeFalsy();
     expect(text(r)).toBe(KEYLESS_ANSWER);
     expect(KEYLESS_ANSWER).toContain("VERDICT_API_KEY");
-    expect(KEYLESS_ANSWER).toContain("https://www.verdict.finance/pricing");
+    expect(KEYLESS_ANSWER).toContain(
+      "Per-domain breakdowns need a free Verdict API key: sign in at https://www.verdict.finance/dashboard/keys, make a key, set VERDICT_API_KEY in this server's environment, then ask again.",
+    );
   });
 
   it("does not call the tier-gated route at all", async () => {
@@ -100,8 +102,9 @@ describe("get_rating_breakdown with a key", () => {
     const r = await getRatingBreakdown(c, { entity_type: "protocol", slug: "aave-v4" });
     const t = text(r);
     expect(r.isError).toBe(true);
-    expect(t).toContain("VERDICT_API_KEY");
-    expect(t).toContain("https://www.verdict.finance/pricing");
+    expect(t).toBe(
+      "Verdict did not accept the API key in VERDICT_API_KEY. Check the key, or make a new one, at https://www.verdict.finance/dashboard/keys.",
+    );
   });
 });
 

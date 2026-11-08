@@ -54,9 +54,9 @@ on verdict.finance.
 
 Ratings are free to read: the tools above work with no key at all. Set
 `VERDICT_API_KEY` and the server authenticates every call, which adds
-`get_rating_breakdown` (per-domain scores). Keys come from the Verdict
-dashboard at [verdict.finance](https://www.verdict.finance); plans are at
-[verdict.finance/pricing](https://www.verdict.finance/pricing).
+`get_rating_breakdown` (per-domain scores). Keys are free: sign in at
+[verdict.finance/dashboard/keys](https://www.verdict.finance/dashboard/keys) and
+make one.
 
 ```json
 {
@@ -103,9 +103,9 @@ review, but re-rating is always a human decision.
 ### Example output
 
 ```
-Aave V4 — BBB (78/100) · protocol · chains: Ethereum · categories: lending · https://www.verdict.finance/products/ratings#protocol-aave-v4
+Aave V4: BBB (78/100) · protocol · chains: Ethereum · categories: lending · https://www.verdict.finance/products/ratings#protocol-aave-v4
 
-Rating by Verdict — https://www.verdict.finance/products/ratings#protocol-aave-v4 · Methodology + deeper analysis at https://www.verdict.finance
+Rating by Verdict: https://www.verdict.finance/products/ratings#protocol-aave-v4
 ```
 
 Entities that are not yet rated render as `unrated`. When a rating was pulled

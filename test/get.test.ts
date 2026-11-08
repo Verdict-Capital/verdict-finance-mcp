@@ -14,11 +14,12 @@ describe("get_rating", () => {
 
     const r = await getRating(c, { entity_type: "protocol", identifier: "aave" });
     const t = text(r);
-    expect(t).toContain("Aave V4 — A (87/100) · protocol");
+    expect(t).toContain("Aave V4: A (87/100) · protocol");
     expect(t).toContain("chains: ethereum");
     expect(t).toContain("categories: Lending");
     expect(t).toContain("products/ratings#protocol-aave");
-    expect(t).toContain("Rating by Verdict —");
+    expect(t).toContain("Rating by Verdict: https://www.verdict.finance/products/ratings#protocol-aave");
+    expect(t).not.toContain("Methodology + deeper analysis");
     expect(r.isError).toBeFalsy();
   });
 
@@ -36,7 +37,7 @@ describe("get_rating", () => {
     c.entities.token = [entity({ id: "t1", name: "New Token", slug: "new-token" })];
     c.ratings.t1 = null;
     const r = await getRating(c, { entity_type: "token", identifier: "new-token" });
-    expect(text(r)).toContain("New Token — unrated · token");
+    expect(text(r)).toContain("New Token: unrated · token");
     expect(r.isError).toBeFalsy();
   });
 
@@ -45,7 +46,7 @@ describe("get_rating", () => {
     c.entities.protocol = [];
     const r = await getRating(c, { entity_type: "protocol", identifier: "ghost" });
     expect(text(r)).toContain('No Verdict rating found for "ghost" (protocol).');
-    expect(text(r)).toContain("Rating by Verdict —");
+    expect(text(r)).toContain("Rating by Verdict: https://www.verdict.finance/products/ratings");
     expect(r.isError).toBeFalsy();
   });
 
@@ -53,7 +54,7 @@ describe("get_rating", () => {
     const c = new FakeClient();
     c.throwOn.get = "rate_limit";
     const r = await getRating(c, { entity_type: "protocol", identifier: "aave" });
-    expect(text(r)).toBe("Verdict rate limit reached (120/min per IP) — try again shortly.");
+    expect(text(r)).toBe("Verdict's rate limit was reached; try again shortly.");
     expect(r.isError).toBe(true);
   });
 
@@ -97,7 +98,7 @@ describe("get_rating", () => {
     c.throwOn.quantum = "network";
     const r = await getRating(c, { entity_type: "chain", identifier: "ethereum" });
     const t = text(r);
-    expect(t).toContain("Ethereum — A (80/100) · chain");
+    expect(t).toContain("Ethereum: A (80/100) · chain");
     expect(t).not.toContain("Quantum readiness");
     expect(r.isError).toBeFalsy();
   });
