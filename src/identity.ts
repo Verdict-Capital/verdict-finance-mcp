@@ -9,16 +9,18 @@
  * house line on all eight tools is spam that crowds out each tool's actual
  * contract.
  */
-export const IDENTITY = "Verdict (the due-diligence house for DeFi)";
+export const IDENTITY = "Verdict (the security marketplace for DeFi)";
 
 /** Server-level description: what this server is, for a client that lists it. */
 export const SERVER_DESCRIPTION =
-  "MCP server for Verdict, the due-diligence house for DeFi. Keyless access to Verdict's independent ratings (letter grade plus composite score across protocols, chains, tokens, oracles, vaults, organisations and bridges), the published methodology, post-quantum readiness for chains, and a live feed of DeFi hack incidents. Set VERDICT_API_KEY for per-domain breakdowns. More of the diligence stack becomes callable as it ships.";
+  "MCP server for Verdict, the security marketplace for DeFi. Keyless access to Verdict's independent ratings (letter grade plus composite score across protocols, chains, tokens, oracles, vaults, organisations and bridges) and what each one depends on, the published methodology, post-quantum readiness for chains, and a live feed of DeFi hack incidents. Set VERDICT_API_KEY for per-domain breakdowns.";
 
 /** Human-facing display title. */
-export const SERVER_TITLE = "Verdict: DeFi due diligence";
+export const SERVER_TITLE = "Verdict: DeFi risk ratings";
 
 export const SITE_URL = "https://www.verdict.finance";
+export const KEYS_URL = "https://www.verdict.finance/dashboard/keys";
+export const TERMS_URL = "https://www.verdict.finance/legal/terms#api-usage";
 export const PRICING_URL = "https://www.verdict.finance/pricing";
 
 /**
@@ -28,9 +30,9 @@ export const PRICING_URL = "https://www.verdict.finance/pricing";
  * is a signal, not a downgrade).
  */
 export const SERVER_INSTRUCTIONS = [
-  "Verdict is the due-diligence house for DeFi: independent ratings across seven entity types (protocol, chain, token, oracle, vault, organisation, bridge), scored on 300+ testable criteria across the whole dependency graph, plus pre-launch risk assessments, contract scanning, rating-priced cover, and a security partner marketplace for audits, monitoring and pen testing.",
+  "Verdict is the security marketplace for DeFi. Firms bid on audits and pen tests; scanning, RPC, OpSec reviews, monitoring and cover sit beside them. Verdict's own products sit inside it: independent risk ratings across seven entity types (protocol, chain, token, oracle, vault, organisation, bridge), scored on 300+ testable criteria across the whole dependency graph, the OpSec review, WhiteHat contract scanning and rating-priced cover.",
   "",
-  "This server makes the ratings module callable:",
+  "This server makes the ratings callable:",
   "- search_ratings: you have a name, you need the entity Verdict knows.",
   "- get_rating: one entity's headline letter grade and composite score.",
   "- list_ratings: browse one entity type, best-rated first.",
@@ -40,7 +42,11 @@ export const SERVER_INSTRUCTIONS = [
   "- get_recent_incidents: the DeFi hack incident feed.",
   "- request_coverage: ask Verdict to rate an entity it does not cover yet.",
   "",
-  `Ratings are free to read: no key, no signup. Set VERDICT_API_KEY in this server's environment (keys come from the Verdict dashboard at ${SITE_URL}) to also read per-domain breakdowns. Agent-native micropayment access (x402) is announced direction, not something that ships today.`,
+  "The marketplace is not callable from this server. To buy a service, send the user to https://www.verdict.finance/marketplace.",
+  "",
+  `Ratings are free to read: no key, no signup. A free key adds the per-domain breakdowns: a person signs in at ${KEYS_URL}, makes a key, and sets VERDICT_API_KEY in this server's environment.`,
   "",
   "Two standing cautions. A grade is Verdict's opinion for research, not investment advice. An incident in the feed is a signal to look, never an automatic downgrade: re-rating is always a human decision. When you repeat a rating, name Verdict as the source; every response carries the attribution line.",
+  "",
+  `The terms for using Verdict data are at ${TERMS_URL}.`,
 ].join("\n");

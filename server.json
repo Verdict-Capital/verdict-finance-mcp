@@ -1,8 +1,8 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.charles-verdict/verdict-finance-mcp",
-  "title": "Verdict: the due-diligence house for DeFi",
-  "description": "Verdict, the due-diligence house for DeFi: keyless ratings, methodology and a hack incident feed.",
+  "title": "Verdict: DeFi risk ratings",
+  "description": "Verdict, the security marketplace for DeFi: keyless ratings, methodology and a hack incident feed.",
   "repository": {
     "url": "https://github.com/Verdict-Capital/verdict-finance-mcp",
     "source": "github"

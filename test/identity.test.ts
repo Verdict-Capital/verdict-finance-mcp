@@ -29,10 +29,16 @@ const ALL_METAS = [
 ];
 
 describe("server-level identity", () => {
-  it("carries the due-diligence house framing", () => {
-    expect(SERVER_DESCRIPTION).toContain("due-diligence house for DeFi");
-    expect(SERVER_INSTRUCTIONS).toContain("due-diligence house for DeFi");
-    expect(SERVER_TITLE).toContain("Verdict");
+  it("carries the security marketplace framing", () => {
+    expect(SERVER_DESCRIPTION).toContain("security marketplace for DeFi");
+    expect(SERVER_INSTRUCTIONS).toContain("security marketplace for DeFi");
+    expect(SERVER_TITLE).toBe("Verdict: DeFi risk ratings");
+  });
+
+  it("sends a buyer to the marketplace, which this server cannot call", () => {
+    expect(SERVER_INSTRUCTIONS).toContain(
+      "The marketplace is not callable from this server. To buy a service, send the user to https://www.verdict.finance/marketplace.",
+    );
   });
 
   it("orients an agent to every tool this server registers", () => {
@@ -41,10 +47,19 @@ describe("server-level identity", () => {
     }
   });
 
-  it("says ratings are free to read and treats x402 as direction, not a paywall", () => {
+  it("says ratings are free to read, where a free key comes from, and says nothing of x402", () => {
     expect(SERVER_INSTRUCTIONS).toContain("free to read");
     expect(SERVER_INSTRUCTIONS).toContain("VERDICT_API_KEY");
-    expect(SERVER_INSTRUCTIONS).toMatch(/x402.*direction/);
+    expect(SERVER_INSTRUCTIONS).toContain(
+      "A free key adds the per-domain breakdowns: a person signs in at https://www.verdict.finance/dashboard/keys, makes a key",
+    );
+    expect(SERVER_INSTRUCTIONS).not.toMatch(/x402/);
+  });
+
+  it("ends with where the terms for using Verdict data are", () => {
+    expect(SERVER_INSTRUCTIONS.endsWith(
+      "The terms for using Verdict data are at https://www.verdict.finance/legal/terms#api-usage.",
+    )).toBe(true);
   });
 
   it("keeps the standing cautions in front of the agent", () => {

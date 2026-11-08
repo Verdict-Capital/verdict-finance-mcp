@@ -1,13 +1,12 @@
 # verdict-finance-mcp
 
-[Verdict](https://www.verdict.finance) is the due-diligence house for DeFi:
-independent ratings, rating-priced cover, security testing and continuous
-monitoring, plus a security partner marketplace for audits, monitoring and pen
-testing, across seven entity types. This
+[Verdict](https://www.verdict.finance) is the security marketplace for DeFi.
+Firms bid on audits and pen tests; scanning, RPC, OpSec reviews, monitoring and
+cover sit beside them. Ratings are free. This
 [Model Context Protocol](https://modelcontextprotocol.io) server lets AI agents
-call that house directly.
+read those ratings directly.
 
-**Live today: Ratings.** Letter grade (AAA to D) plus a composite score
+**What it reads.** Letter grade (AAA to D) plus a composite score
 (0 to 100) built from 300+ criteria across the full dependency graph, for
 protocols, chains, tokens, oracles, vaults, organisations and bridges. Plus
 post-quantum readiness for chains, and a live feed of DeFi hack incidents
@@ -76,9 +75,6 @@ sent, and nothing about the keyless path changes. The key is never logged,
 echoed, or included in tool output. Called without a key,
 `get_rating_breakdown` answers with where to get one rather than failing.
 
-Agent-native micropayment access (x402) is the announced direction. It is not
-shipped, and nothing here is behind a paywall today.
-
 Quantum-readiness data is provided by
 [LayerQu](https://layerqu.com/dashboard/) and is companion data only. It never
 feeds a Verdict grade; chain ratings simply carry an extra LayerQu line when a
@@ -115,25 +111,15 @@ Rating by Verdict — https://www.verdict.finance/products/ratings#protocol-aave
 Entities that are not yet rated render as `unrated`. When a rating was pulled
 down by a weak dependency, the response says which one.
 
-## The roadmap: the callable marketplace
+## The marketplace
 
-Verdict's diligence lifecycle is Assess, Rate, Cover, Secure, Monitor. Ratings
-are the first module agents can call. As the rest of the house becomes
-callable, this server grows a module per product:
+This server reads ratings. The marketplace is not callable from it: audits,
+pen tests, scanning, RPC, OpSec reviews, monitoring and cover are at
+[verdict.finance/marketplace](https://www.verdict.finance/marketplace).
 
-- **Cover**: rating-priced parametric cover on rated protocols.
-- **Audit Marketplace**: hand over a repo, receive blind bids from vetted audit
-  firms.
-- **Monitoring Marketplace**: watchlists, live alerts and webhooks on rated
-  entities.
-- **Pen Test Marketplace**: engage penetration tests through vetted partner
-  firms, scoped and priced per engagement by the partner.
-
-The rating function stays structurally separate from what the marketplace
-sells: buying a service never moves a grade.
-
-Tool names are module-scoped (`search_ratings`, `get_rating`, `list_ratings`)
-so new modules arrive without breaking existing agents.
+The rating function is structurally separate from the marketplace. Paying never
+moves a grade; the evidence a scan or an audit produces can, in either
+direction.
 
 ## How it works
 
@@ -164,6 +150,11 @@ Ratings and methodology are © Verdict. This tool surfaces the public ratings
 and the published methodology; the deeper analysis lives at
 [verdict.finance](https://www.verdict.finance). The code is Apache-2.0; the
 Verdict name and branding are not licensed by it.
+
+Wherever you show a rating, name Verdict as the source, for example "Rating by
+Verdict" with a link, or show the
+[Verdict badge](https://www.verdict.finance/badges/light.svg). The terms are at
+[verdict.finance/legal/terms](https://www.verdict.finance/legal/terms#api-usage).
 
 ## Development
 

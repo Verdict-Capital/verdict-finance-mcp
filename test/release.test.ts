@@ -59,8 +59,10 @@ describe("registry manifest", () => {
   });
 
   it("carries the house identity in its description", () => {
-    expect(server.description).toContain("due-diligence house for DeFi");
-    expect(server.title).toContain("Verdict");
+    expect(server.description).toBe(
+      "Verdict, the security marketplace for DeFi: keyless ratings, methodology and a hack incident feed.",
+    );
+    expect(server.title).toBe("Verdict: DeFi risk ratings");
   });
 
   it("keeps title and description inside the registry's 100-character cap", () => {
