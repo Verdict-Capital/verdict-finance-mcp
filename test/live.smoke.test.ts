@@ -12,6 +12,7 @@ import { quantumReadiness } from "../src/tools/quantum.js";
 import { getRecentIncidents } from "../src/tools/incidents.js";
 import { getMethodology } from "../src/tools/methodology.js";
 import { getRatingBreakdown, KEYLESS_ANSWER } from "../src/tools/breakdown.js";
+import { getDependencies } from "../src/tools/dependencies.js";
 
 const run = process.env.VERDICT_LIVE_SMOKE === "1" ? describe : describe.skip;
 // get_rating_breakdown fronts a tier-gated route, so a live read of it needs a
@@ -112,6 +113,14 @@ run("live smoke (real api)", () => {
     expect(r.isError).toBeFalsy();
     expect(text).toContain("Domain scores");
     expect(text).toContain("Rating by Verdict: https://www.verdict.finance/products/ratings");
+  }, 20_000);
+
+  it("get_dependencies(chain, ethereum) reads the public graph keylessly", async () => {
+    const r = await getDependencies(client, { entity_type: "chain", slug: "ethereum" });
+    const text = r.content.map((c) => c.text ?? "").join("\n");
+    expect(r.isError).toBeFalsy();
+    expect(text.startsWith("Ethereum (chain): ")).toBe(true);
+    expect(text).toContain("Rating by Verdict: https://www.verdict.finance/products/ratings#chain-ethereum");
   }, 20_000);
 
   it("quantum_readiness(ethereum) returns a QRI line (LayerQu)", async () => {

@@ -76,6 +76,10 @@
           "task": "Per-domain scores behind one entity's grade (needs VERDICT_API_KEY)"
         },
         {
+          "name": "get_dependencies",
+          "task": "What an entity depends on, what depends on it, and its last five grade moves with their causes"
+        },
+        {
           "name": "request_coverage",
           "task": "Ask Verdict to rate an entity it does not cover yet"
         }

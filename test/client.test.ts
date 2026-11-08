@@ -60,6 +60,25 @@ describe("HttpVerdictClient error mapping", () => {
     await expect(c.listEntities("oracle")).rejects.toMatchObject({ kind: "network" });
   });
 
+  it("reads the public graph from /graph through the shared request path", async () => {
+    const fetchMock = mockFetch(200, {
+      built_at: "2026-11-08T00:00:00+00:00",
+      nodes: [{ id: "chain:ethereum" }],
+      edges: [],
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const c = new HttpVerdictClient({ base: "https://example.test/api/v1" });
+    const g = await c.getGraph();
+    expect(fetchMock.mock.calls[0][0]).toBe("https://example.test/api/v1/graph");
+    const init = fetchMock.mock.calls[0][1] as { headers: Record<string, string> };
+    expect(init.headers["user-agent"]).toMatch(/^verdict-finance-mcp\//);
+    expect(g.nodes.map((n) => n.id)).toEqual(["chain:ethereum"]);
+    expect(g.edges).toEqual([]);
+
+    vi.stubGlobal("fetch", mockFetch(429, {}));
+    await expect(c.getGraph()).rejects.toMatchObject({ kind: "rate_limit" });
+  });
+
   it("returns the latest scorecard's grade/composite, or null when empty", async () => {
     vi.stubGlobal("fetch", mockFetch(200, {
       items: [{ letter_grade: "AA", composite_score: 91.2, status: "published" }],

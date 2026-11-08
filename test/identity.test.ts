@@ -16,6 +16,7 @@ import { recentIncidentsMeta } from "../src/tools/incidents.js";
 import { getMethodologyMeta } from "../src/tools/methodology.js";
 import { getRatingBreakdownMeta } from "../src/tools/breakdown.js";
 import { requestCoverageMeta } from "../src/tools/coverage.js";
+import { getDependenciesMeta } from "../src/tools/dependencies.js";
 
 const ALL_METAS = [
   searchRatingsMeta,
@@ -25,6 +26,7 @@ const ALL_METAS = [
   recentIncidentsMeta,
   getMethodologyMeta,
   getRatingBreakdownMeta,
+  getDependenciesMeta,
   requestCoverageMeta,
 ];
 

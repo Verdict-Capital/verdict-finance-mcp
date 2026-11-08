@@ -14,6 +14,7 @@ import { quantumReadiness, quantumReadinessInput, quantumReadinessMeta } from ".
 import { getRecentIncidents, recentIncidentsInput, recentIncidentsMeta } from "./tools/incidents.js";
 import { getMethodology, getMethodologyInput, getMethodologyMeta } from "./tools/methodology.js";
 import { getRatingBreakdown, getRatingBreakdownInput, getRatingBreakdownMeta } from "./tools/breakdown.js";
+import { getDependencies, getDependenciesInput, getDependenciesMeta } from "./tools/dependencies.js";
 import { requestCoverage, requestCoverageInput, requestCoverageMeta } from "./tools/coverage.js";
 import {
   SERVER_DESCRIPTION,
@@ -94,6 +95,16 @@ async function main(): Promise<void> {
       inputSchema: getRatingBreakdownInput,
     },
     (args) => getRatingBreakdown(client, args),
+  );
+
+  server.registerTool(
+    getDependenciesMeta.name,
+    {
+      title: getDependenciesMeta.title,
+      description: getDependenciesMeta.description,
+      inputSchema: getDependenciesInput,
+    },
+    (args) => getDependencies(client, args),
   );
 
   server.registerTool(

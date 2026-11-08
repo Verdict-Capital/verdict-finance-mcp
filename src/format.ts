@@ -30,7 +30,7 @@ export function deepLink(entityType: EntityType, slug: string): string {
 }
 
 /** The UTC day (YYYY-MM-DD) of an ISO 8601 time, or null when it does not parse. */
-function utcDay(iso: string | null | undefined): string | null {
+export function utcDay(iso: string | null | undefined): string | null {
   if (!iso) return null;
   const t = Date.parse(iso);
   return Number.isNaN(t) ? null : new Date(t).toISOString().slice(0, 10);

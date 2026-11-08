@@ -14,6 +14,7 @@ import { recentIncidentsMeta } from "../src/tools/incidents.js";
 import { getMethodologyMeta } from "../src/tools/methodology.js";
 import { getRatingBreakdownMeta } from "../src/tools/breakdown.js";
 import { requestCoverageMeta } from "../src/tools/coverage.js";
+import { getDependenciesMeta } from "../src/tools/dependencies.js";
 
 const root = (p: string) => fileURLToPath(new URL(`../${p}`, import.meta.url));
 const pkg = JSON.parse(readFileSync(root("package.json"), "utf8"));
@@ -29,6 +30,7 @@ const TOOL_NAMES = [
   recentIncidentsMeta,
   getMethodologyMeta,
   getRatingBreakdownMeta,
+  getDependenciesMeta,
   requestCoverageMeta,
 ].map((m) => m.name);
 

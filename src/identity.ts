@@ -6,7 +6,7 @@
  * The identity clause. It opens exactly ONE tool description (search_ratings,
  * the discovery entry point) rather than every tool: an agent reads the
  * server-level description and instructions once per session, so repeating the
- * house line on all eight tools is spam that crowds out each tool's actual
+ * house line on all nine tools is spam that crowds out each tool's actual
  * contract.
  */
 export const IDENTITY = "Verdict (the security marketplace for DeFi)";
@@ -36,6 +36,7 @@ export const SERVER_INSTRUCTIONS = [
   "- get_rating: one entity's headline letter grade and composite score.",
   "- list_ratings: browse one entity type, best-rated first.",
   "- get_rating_breakdown: the per-domain scores behind a grade.",
+  "- get_dependencies: what an entity depends on, what depends on it, and its last five grade moves with their causes.",
   "- get_methodology: how a grade is produced (criteria counts, domains per entity type, the AAA to D scale).",
   "- quantum_readiness: post-quantum readiness of chains, data by LayerQu. Companion data only, never part of a Verdict grade.",
   "- get_recent_incidents: the DeFi hack incident feed.",

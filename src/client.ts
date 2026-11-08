@@ -225,6 +225,60 @@ export interface ContactReceipt {
   created_at?: string;
 }
 
+/** A grade move's cause: only the fields the public graph serves for it. */
+export interface GraphMoveCause {
+  kind: string;
+  entity_type?: string;
+  entity_slug?: string;
+  entity_name?: string;
+}
+
+/** One of a node's recent grade moves, as the public graph serves it. */
+export interface GraphMove {
+  computed_at: string | null;
+  prior_grade: string | null;
+  new_grade: string | null;
+  prior_composite: number | null;
+  new_composite: number | null;
+  cause: GraphMoveCause;
+}
+
+/**
+ * A node of the public dependency graph: a rated entity, or an entity an edge
+ * points at (unrated, or private with no slug and no name). Ids are
+ * "<type>:<slug>".
+ */
+export interface GraphNode {
+  id: string;
+  type: string;
+  slug: string | null;
+  name: string | null;
+  rated: boolean;
+  grade: string | null;
+  composite: number | null;
+  intrinsic_grade: string | null;
+  intrinsic_composite: number | null;
+  withdrawn: boolean;
+  matured: boolean;
+  private: boolean;
+  recent_moves: GraphMove[];
+}
+
+/** A dependency edge: `from` depends on `to`. */
+export interface GraphEdge {
+  from: string;
+  to: string;
+  type: string;
+  criticality: string;
+  /** Ranks below B the target drags the source, 0 for none. */
+  rank_drag: number;
+}
+
+export interface Graph {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+}
+
 export interface VerdictClient {
   listEntities(type: EntityType, params?: ListParams): Promise<EntityRecord[]>;
   getEntity(type: EntityType, identifier: string): Promise<EntityRecord>;
@@ -238,6 +292,8 @@ export interface VerdictClient {
   getMethodology(): Promise<Methodology>;
   /** Per-domain breakdown for one entity. Needs a key (tier-gated route). */
   getDomains(type: EntityType, slug: string): Promise<DomainBreakdown>;
+  /** The public dependency graph. Anonymous. */
+  getGraph(): Promise<Graph>;
   /**
    * Whether this client was given an API key. Tools that front a tier-gated
    * route ask FIRST, so a keyless caller gets an answer instead of a 401.
@@ -325,6 +381,11 @@ export class HttpVerdictClient implements VerdictClient {
     return this.get<DomainBreakdown>(
       `/${pluralOf(type)}/${encodeURIComponent(slug)}/domains`,
     );
+  }
+
+  async getGraph(): Promise<Graph> {
+    const body = await this.get<Partial<Graph>>("/graph");
+    return { nodes: body.nodes ?? [], edges: body.edges ?? [] };
   }
 
   /**

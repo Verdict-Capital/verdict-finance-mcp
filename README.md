@@ -45,6 +45,7 @@ That is it. No key needed to read ratings. (Requires Node 20+.)
 | `get_recent_incidents({ since?, slug?, min_status?, limit? })` | DeFi hack incidents, newest first (default 25, cap 200). Confirmed by default; `min_status: 'corroborated'` opts into multi-source leads that have not yet reached confirmation. Each is corroborated by more than one public hack-reporting source. Poll with `since`; filter to one rated protocol with `slug`. |
 | `get_methodology({})` | The published methodology: criteria counts and domains per entity type, and the AAA to D grade scale with the composite band each grade needs. |
 | `get_rating_breakdown({ entity_type, slug })` | The per-domain scores behind one entity's grade, plus its intrinsic (pre-dependency) pair. Needs an API key; see [Bring your own key](#bring-your-own-key). |
+| `get_dependencies({ entity_type, slug })` | What one entity depends on and what depends on it, with each link's type, criticality and any rank drag, plus its last five grade moves with their causes. |
 | `request_coverage({ entity_name, entity_type, contact_email, note? })` | Ask Verdict to rate an entity it does not cover yet. Returns a reference id. The resulting rating is public either way; requesting coverage never buys or moves a grade. |
 
 Every rating response ends with an attribution line linking back to the rating
@@ -130,6 +131,7 @@ This server:
 - fetches each entity's latest published scorecard
   (`GET /{type}s/{id}/scorecards`) for the grade + composite score,
 - reads the published methodology from `GET /methodology`,
+- reads the dependency graph behind `get_dependencies` from `GET /graph`,
 - reads per-domain scores from `GET /{type}s/{slug}/domains` (the one route that
   needs a key), and
 - submits coverage requests to `POST /contacts`, the same public endpoint the

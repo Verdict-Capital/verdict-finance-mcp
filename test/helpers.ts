@@ -1,4 +1,4 @@
-import { VerdictError, type ContactReceipt, type ContactSubmission, type DomainBreakdown, type EntityRecord, type IncidentPage, type IncidentParams, type Methodology, type QuantumReadiness, type Rating, type VerdictClient, type ListParams } from "../src/client.js";
+import { VerdictError, type ContactReceipt, type ContactSubmission, type DomainBreakdown, type EntityRecord, type Graph, type IncidentPage, type IncidentParams, type Methodology, type QuantumReadiness, type Rating, type VerdictClient, type ListParams } from "../src/client.js";
 import type { EntityType } from "../src/entities.js";
 
 type Kind = "not_found" | "rate_limit" | "network" | "server" | "unauthorized" | "unknown";
@@ -14,6 +14,7 @@ export class FakeClient implements VerdictClient {
   incidents: IncidentPage = { items: [], total: 0 };
   methodology: Methodology = {};
   domains: DomainBreakdown = {};
+  graph: Graph = { nodes: [], edges: [] };
   contactReceipt: ContactReceipt = { id: "contact-1", status: "new" };
   /** Whether this fake is standing in for a keyed client. */
   apiKey = false;
@@ -26,13 +27,14 @@ export class FakeClient implements VerdictClient {
       | "incidents"
       | "methodology"
       | "domains"
+      | "graph"
       | "contact",
       Kind
     >
   > = {};
   calls = {
     list: 0, get: 0, rating: 0, quantum: 0, incidents: 0,
-    methodology: 0, domains: 0, contact: 0,
+    methodology: 0, domains: 0, graph: 0, contact: 0,
   };
   lastListParams: ListParams | undefined;
   lastIncidentParams: IncidentParams | undefined;
@@ -54,6 +56,12 @@ export class FakeClient implements VerdictClient {
     this.lastDomainsArgs = { type, slug };
     if (this.throwOn.domains) throw new VerdictError(this.throwOn.domains, "forced");
     return this.domains;
+  }
+
+  async getGraph(): Promise<Graph> {
+    this.calls.graph++;
+    if (this.throwOn.graph) throw new VerdictError(this.throwOn.graph, "forced");
+    return this.graph;
   }
 
   async submitContactRequest(body: ContactSubmission): Promise<ContactReceipt> {
