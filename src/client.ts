@@ -47,6 +47,12 @@ export interface EntityRecord {
   slug: string;
   chains?: ChainBrief[];
   categories?: string[];
+  /** "published", or "withdrawn" for a rating Verdict has withdrawn. */
+  status?: string | null;
+  /** When the rating was withdrawn (ISO 8601). */
+  withdrawn_at?: string | null;
+  /** Vaults only: when the instrument expires (ISO 8601). */
+  expires_at?: string | null;
 }
 
 /** The public scorecard fields (domain breakdowns come from getDomains). */

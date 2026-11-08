@@ -17,6 +17,8 @@ export interface RatingItem {
   categories: string[];
   dragHint: string | null;
   hasUnratedDeps: boolean;
+  /** "withdrawn 2026-09-28" or "matured 2026-10-12" for a withdrawn rating. */
+  lifecycle?: string | null;
 }
 
 /**
@@ -25,6 +27,29 @@ export interface RatingItem {
  */
 export function deepLink(entityType: EntityType, slug: string): string {
   return `${RATINGS}#${entityType}-${slug}`;
+}
+
+/** The UTC day (YYYY-MM-DD) of an ISO 8601 time, or null when it does not parse. */
+function utcDay(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const t = Date.parse(iso);
+  return Number.isNaN(t) ? null : new Date(t).toISOString().slice(0, 10);
+}
+
+/**
+ * The mark a withdrawn rating carries after its badge (ruling 401). The grade
+ * stays: it is Verdict's last grade, kept for the record. A vault whose
+ * instrument has expired reads "matured <expiry day>"; anything else withdrawn
+ * reads "withdrawn <withdrawal day>".
+ */
+function lifecycleMark(entityType: EntityType, entity: EntityRecord): string | null {
+  if (entity.status !== "withdrawn") return null;
+  const expires = entity.expires_at ? Date.parse(entity.expires_at) : NaN;
+  if (entityType === "vault" && expires < Date.now()) {
+    return `matured ${utcDay(entity.expires_at)}`;
+  }
+  const day = utcDay(entity.withdrawn_at);
+  return day ? `withdrawn ${day}` : "withdrawn";
 }
 
 export function toRatingItem(
@@ -45,6 +70,7 @@ export function toRatingItem(
     categories: entity.categories ?? [],
     dragHint: rating?.largest_drag_hint ?? null,
     hasUnratedDeps: rating?.has_unrated_dependencies ?? false,
+    lifecycle: lifecycleMark(entityType, entity),
   };
 }
 
@@ -73,8 +99,9 @@ function ratingBadge(grade: string | null, composite: number | null): string {
  * `Aave V4: A (87/100) · protocol · chains: ethereum, base · <link>`
  */
 export function formatItem(item: RatingItem, opts: { categories?: boolean } = {}): string {
+  const mark = item.lifecycle ? `, ${item.lifecycle}` : "";
   const parts = [
-    `${item.name}: ${ratingBadge(item.grade, item.composite)}`,
+    `${item.name}: ${ratingBadge(item.grade, item.composite)}${mark}`,
     item.entityType,
   ];
   if (item.chains.length) parts.push(`chains: ${item.chains.join(", ")}`);

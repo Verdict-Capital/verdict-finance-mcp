@@ -33,6 +33,16 @@ describe("search_ratings", () => {
     expect(t.indexOf("Aave Token")).toBeLessThan(t.indexOf("Aave Protocol"));
   });
 
+  it("marks a withdrawn rating in the results", async () => {
+    const c = new FakeClient();
+    c.entities.oracle = [entity({
+      id: "o1", name: "eOracle", slug: "eoracle", status: "withdrawn", withdrawn_at: "2026-09-28T21:02:14.099179Z",
+    })];
+    c.ratings.o1 = { letter_grade: "B", composite_score: 50.37 };
+    const t = text(await searchRatings(c, { query: "eoracle" }));
+    expect(t).toContain("eOracle: B (50/100), withdrawn 2026-09-28 · oracle");
+  });
+
   it("returns a friendly empty message when nothing matches", async () => {
     const c = new FakeClient();
     const r = await searchRatings(c, { query: "zzz-nonexistent" });

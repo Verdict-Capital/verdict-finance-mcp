@@ -22,6 +22,19 @@ describe("list_ratings", () => {
     expect(t).toContain("Rating by Verdict: https://www.verdict.finance/products/ratings");
   });
 
+  it("marks a withdrawn rating in the list", async () => {
+    const c = new FakeClient();
+    c.entities.oracle = [
+      entity({ id: "o1", name: "eOracle", slug: "eoracle", status: "withdrawn", withdrawn_at: "2026-09-28T21:02:14.099179Z" }),
+      entity({ id: "o2", name: "Chainlink", slug: "chainlink", status: "published" }),
+    ];
+    c.ratings.o1 = { letter_grade: "B", composite_score: 50.37 };
+    c.ratings.o2 = { letter_grade: "A", composite_score: 85 };
+    const t = text(await listRatings(c, { entity_type: "oracle" }));
+    expect(t).toContain("eOracle: B (50/100), withdrawn 2026-09-28 · oracle");
+    expect(t).toContain("Chainlink: A (85/100) · oracle");
+  });
+
   it("caps the limit at 50", async () => {
     const c = new FakeClient();
     c.entities.protocol = [];

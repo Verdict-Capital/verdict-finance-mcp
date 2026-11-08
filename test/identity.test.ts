@@ -66,6 +66,12 @@ describe("server-level identity", () => {
     expect(SERVER_INSTRUCTIONS).toContain("not investment advice");
     expect(SERVER_INSTRUCTIONS).toContain("re-rating is always a human decision");
   });
+
+  it("says a withdrawn or matured rating is the last grade, not a current opinion", () => {
+    expect(SERVER_INSTRUCTIONS).toContain(
+      "A rating marked withdrawn or matured is Verdict's last grade, kept for the record; it is not a current opinion.",
+    );
+  });
 });
 
 describe("tool descriptions", () => {

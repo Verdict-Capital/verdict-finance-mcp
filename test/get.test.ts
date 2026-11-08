@@ -103,6 +103,29 @@ describe("get_rating", () => {
     expect(r.isError).toBeFalsy();
   });
 
+  it("keeps a withdrawn rating's grade and marks it with the day", async () => {
+    const c = new FakeClient();
+    c.entities.oracle = [entity({
+      id: "o1", name: "eOracle", slug: "eoracle", chains: [{ name: "Ethereum" }],
+      status: "withdrawn", withdrawn_at: "2026-09-28T21:02:14.099179Z",
+    })];
+    c.ratings.o1 = { letter_grade: "B", composite_score: 50.37 };
+    const r = await getRating(c, { entity_type: "oracle", identifier: "eoracle" });
+    expect(text(r)).toContain("eOracle: B (50/100), withdrawn 2026-09-28 · oracle · chains: Ethereum");
+    expect(r.isError).toBeFalsy();
+  });
+
+  it("marks a withdrawn vault past its expiry as matured", async () => {
+    const c = new FakeClient();
+    c.entities.vault = [entity({
+      id: "v1", name: "syrupUSDC Sep", slug: "syrupusdc-sep", status: "withdrawn",
+      withdrawn_at: "2026-10-14T09:00:00Z", expires_at: "2026-10-12T08:00:00Z",
+    })];
+    c.ratings.v1 = { letter_grade: "BBB", composite_score: 74 };
+    const r = await getRating(c, { entity_type: "vault", identifier: "syrupusdc-sep" });
+    expect(text(r)).toContain("syrupUSDC Sep: BBB (74/100), matured 2026-10-12 · vault");
+  });
+
   it("non-chain get_rating does not fetch quantum", async () => {
     const c = new FakeClient();
     c.entities.protocol = [entity({ id: "p1", name: "Aave V4", slug: "aave" })];

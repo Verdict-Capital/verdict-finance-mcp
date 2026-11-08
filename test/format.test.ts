@@ -87,6 +87,53 @@ describe("toRatingItem", () => {
   });
 });
 
+describe("withdrawn and matured ratings", () => {
+  const eOracle = {
+    id: "o1", name: "eOracle", slug: "eoracle", chains: [{ name: "Ethereum" }], categories: [],
+    status: "withdrawn", withdrawn_at: "2026-09-28T21:02:14.099179Z", expires_at: null,
+  };
+  const b = { letter_grade: "B", composite_score: 50.37, largest_drag_hint: null, has_unrated_dependencies: false };
+
+  it("keeps the grade and marks it withdrawn with the day", () => {
+    expect(formatItem(toRatingItem("oracle", eOracle, b))).toBe(
+      "eOracle: B (50/100), withdrawn 2026-09-28 · oracle · chains: Ethereum · https://www.verdict.finance/products/ratings#oracle-eoracle",
+    );
+  });
+
+  it("dates the withdrawal by its UTC day", () => {
+    const late = { ...eOracle, withdrawn_at: "2026-09-28T23:30:00-05:00" };
+    expect(formatItem(toRatingItem("oracle", late, b))).toContain("eOracle: B (50/100), withdrawn 2026-09-29 · oracle");
+  });
+
+  it("marks a withdrawn vault whose instrument has expired as matured, on the expiry day", () => {
+    const vault = {
+      id: "v1", name: "syrupUSDC Sep", slug: "syrupusdc-sep", status: "withdrawn",
+      withdrawn_at: "2026-10-14T09:00:00Z", expires_at: "2026-10-12T08:00:00Z",
+    };
+    const line = formatItem(toRatingItem("vault", vault, { ...b, letter_grade: "BBB", composite_score: 74 }));
+    expect(line).toContain("syrupUSDC Sep: BBB (74/100), matured 2026-10-12 · vault");
+    expect(line).not.toContain("withdrawn");
+  });
+
+  it("marks a withdrawn vault that has not expired as withdrawn", () => {
+    const vault = {
+      id: "v1", name: "Live Vault", slug: "live-vault", status: "withdrawn",
+      withdrawn_at: "2026-10-14T09:00:00Z", expires_at: "2099-01-01T00:00:00Z",
+    };
+    expect(formatItem(toRatingItem("vault", vault, b))).toContain("Live Vault: B (50/100), withdrawn 2026-10-14 · vault");
+  });
+
+  it("reads expires_at only on a vault", () => {
+    const token = { ...eOracle, name: "Old Token", slug: "old-token", expires_at: "2026-10-12T08:00:00Z" };
+    expect(formatItem(toRatingItem("token", token, b))).toContain("Old Token: B (50/100), withdrawn 2026-09-28 · token");
+  });
+
+  it("leaves a published rating unmarked", () => {
+    const live = { ...eOracle, status: "published", withdrawn_at: null };
+    expect(formatItem(toRatingItem("oracle", live, b))).toContain("eOracle: B (50/100) · oracle");
+  });
+});
+
 describe("detailLines", () => {
   const base: RatingItem = {
     name: "Aave V4", entityType: "protocol", slug: "aave",

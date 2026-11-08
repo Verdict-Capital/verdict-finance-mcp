@@ -47,5 +47,7 @@ export const SERVER_INSTRUCTIONS = [
   "",
   "Two standing cautions. A grade is Verdict's opinion for research, not investment advice. An incident in the feed is a signal to look, never an automatic downgrade: re-rating is always a human decision. When you repeat a rating, name Verdict as the source; every response carries the attribution line.",
   "",
+  "A rating marked withdrawn or matured is Verdict's last grade, kept for the record; it is not a current opinion.",
+  "",
   `The terms for using Verdict data are at ${TERMS_URL}.`,
 ].join("\n");
