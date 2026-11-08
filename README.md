@@ -46,7 +46,7 @@ That is it. No key needed to read ratings. (Requires Node 20+.)
 | `get_methodology({})` | The published methodology: criteria counts and domains per entity type, and the AAA to D grade scale with the composite band each grade needs. |
 | `get_rating_breakdown({ entity_type, slug })` | The per-domain scores behind one entity's grade, plus its intrinsic (pre-dependency) pair. Needs an API key; see [Bring your own key](#bring-your-own-key). |
 | `get_dependencies({ entity_type, slug })` | What one entity depends on and what depends on it, with each link's type, criticality and any rank drag, plus its last five grade moves with their causes. |
-| `request_coverage({ entity_name, entity_type, contact_email, note? })` | Ask Verdict to rate an entity it does not cover yet. Returns a reference id. The resulting rating is public either way; requesting coverage never buys or moves a grade. |
+| `request_new_rating({ entity_name, entity_type, contact_email, note? })` | Ask Verdict to rate an entity it does not rate yet. Returns a reference id. The resulting rating is public either way; requesting a rating never buys or moves a grade. |
 
 Every rating response ends with an attribution line linking back to the rating
 on verdict.finance.
@@ -86,7 +86,7 @@ including ones at protocols Verdict does not rate. Two things are worth
 knowing when reading it. Matching to a rated protocol happens when an incident
 is received, and re-runs when an incident escalates and its payload improves,
 so matched_protocol reads as of the incident's current tier. It is still never
-retroactive when Verdict's own coverage grows. And an incident is a signal to
+retroactive when Verdict rates more entities. And an incident is a signal to
 look, never an automatic downgrade: a matched entity may be flagged under
 review, but re-rating is always a human decision.
 
@@ -100,7 +100,7 @@ review, but re-rating is always a human decision.
 - *"How does Verdict score a bridge?"* runs `get_methodology({})`
 - *"What dragged Aave's grade down?"* runs `get_rating_breakdown({ entity_type: "protocol", slug: "aave-v4" })`
 - *"What does syrupUSDT depend on?"* runs `get_dependencies({ entity_type: "vault", slug: "syrupusdt" })`
-- *"Get my protocol rated."* runs `request_coverage({ entity_name: "...", entity_type: "protocol", contact_email: "..." })`
+- *"Get my protocol rated."* runs `request_new_rating({ entity_name: "...", entity_type: "protocol", contact_email: "..." })`
 
 ### Example output
 
@@ -135,7 +135,7 @@ This server:
 - reads the dependency graph behind `get_dependencies` from `GET /graph`,
 - reads per-domain scores from `GET /{type}s/{slug}/domains` (the one route that
   needs a key), and
-- submits coverage requests to `POST /contacts`, the same public endpoint the
+- submits rating requests to `POST /contacts`, the same public endpoint the
   "Get rated" form on verdict.finance posts to.
 
 The API base is `https://api.verdict.finance/api/v1` and can be overridden with

@@ -8,16 +8,16 @@ import { SITE_URL } from "../identity.js";
 const CONTACT_URL = `${SITE_URL}/contact`;
 
 // The public contacts endpoint keys the "Get rated" flow on this request_type,
-// so a coverage request from an agent lands in the same queue as one from the
+// so a rating request from an agent lands in the same queue as one from the
 // website form rather than in the generic support pile.
 const REQUEST_TYPE = "rating-request";
 
-export const requestCoverageInput = {
+export const requestNewRatingInput = {
   entity_name: z
     .string()
     .min(1)
     .max(200)
-    .describe("The entity to cover, as it is publicly known, e.g. 'Morpho Blue'."),
+    .describe("The entity to rate, as it is publicly known, e.g. 'Morpho Blue'."),
   entity_type: entityTypeSchema.describe(
     "What kind of entity it is: protocol, chain, token, oracle, vault, organisation, or bridge.",
   ),
@@ -32,11 +32,11 @@ export const requestCoverageInput = {
     .describe("Optional context: links, chains it is live on, why it matters, any deadline."),
 } as const;
 
-export const requestCoverageMeta = {
-  name: "request_coverage",
-  title: "Request Verdict coverage",
+export const requestNewRatingMeta = {
+  name: "request_new_rating",
+  title: "Request a new Verdict rating",
   description:
-    "Ask Verdict to rate an entity it does not cover yet, and get a reference id back. Requesting coverage never buys a grade or moves one: ratings stay independent, and the resulting rating is public either way, readable by anyone through these tools. The team replies to the email address you pass, so ask the user for a real one first. Example: request_coverage({ entity_name: 'Morpho Blue', entity_type: 'protocol', contact_email: 'team@example.com' }).",
+    "Ask Verdict to rate an entity it does not rate yet, and get a reference id back. Requesting a rating never buys a grade or moves one: ratings stay independent, and the resulting rating is public either way, readable by anyone through these tools. The team replies to the email address you pass, so ask the user for a real one first. Example: request_new_rating({ entity_name: 'Morpho Blue', entity_type: 'protocol', contact_email: 'team@example.com' }).",
 };
 
 function buildMessage(args: {
@@ -45,7 +45,7 @@ function buildMessage(args: {
   note?: string;
 }): string {
   const lines = [
-    "Coverage request submitted through the Verdict MCP server.",
+    "Rating request submitted through the Verdict MCP server.",
     `Entity: ${args.entity_name}`,
     `Entity type: ${args.entity_type}`,
   ];
@@ -53,7 +53,7 @@ function buildMessage(args: {
   return lines.join("\n");
 }
 
-export async function requestCoverage(
+export async function requestNewRating(
   client: VerdictClient,
   args: {
     entity_name: string;
@@ -75,7 +75,7 @@ export async function requestCoverage(
       // The submit route has its own, much smaller per-IP allowance than the
       // read API, so the generic read-limit copy would misdescribe this.
       return textResult(
-        `Verdict is rate limiting coverage requests from this IP right now. Wait and try again, or submit the request directly at ${CONTACT_URL}.`,
+        `Verdict is rate limiting rating requests from this IP right now. Wait and try again, or submit the request directly at ${CONTACT_URL}.`,
       );
     }
     return errorResult(friendlyError(err));
@@ -84,8 +84,8 @@ export async function requestCoverage(
   const ref = receipt.id ? ` Reference: ${receipt.id}.` : "";
   return textResult(
     [
-      `Coverage request submitted for ${args.entity_name} (${args.entity_type}).${ref} The Verdict team replies to ${args.contact_email}.`,
-      "Requesting coverage does not buy a grade or move one: the resulting rating is public either way, and readable by anyone through these tools.",
+      `Rating request submitted for ${args.entity_name} (${args.entity_type}).${ref} The Verdict team replies to ${args.contact_email}.`,
+      "Requesting a rating does not buy a grade or move one: the resulting rating is public either way, and readable by anyone through these tools.",
     ].join("\n"),
   );
 }

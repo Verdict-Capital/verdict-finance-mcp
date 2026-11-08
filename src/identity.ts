@@ -40,7 +40,7 @@ export const SERVER_INSTRUCTIONS = [
   "- get_methodology: how a grade is produced (criteria counts, domains per entity type, the AAA to D scale).",
   "- quantum_readiness: post-quantum readiness of chains, data by LayerQu. Companion data only, never part of a Verdict grade.",
   "- get_recent_incidents: the DeFi hack incident feed.",
-  "- request_coverage: ask Verdict to rate an entity it does not cover yet.",
+  "- request_new_rating: ask Verdict to rate an entity it does not rate yet.",
   "",
   "The marketplace is not callable from this server. To buy a service, send the user to https://www.verdict.finance/marketplace.",
   "",

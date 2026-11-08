@@ -13,7 +13,7 @@ import { quantumReadinessMeta } from "../src/tools/quantum.js";
 import { recentIncidentsMeta } from "../src/tools/incidents.js";
 import { getMethodologyMeta } from "../src/tools/methodology.js";
 import { getRatingBreakdownMeta } from "../src/tools/breakdown.js";
-import { requestCoverageMeta } from "../src/tools/coverage.js";
+import { requestNewRatingMeta } from "../src/tools/new-rating.js";
 import { getDependenciesMeta } from "../src/tools/dependencies.js";
 
 const root = (p: string) => fileURLToPath(new URL(`../${p}`, import.meta.url));
@@ -31,7 +31,7 @@ const TOOL_NAMES = [
   getMethodologyMeta,
   getRatingBreakdownMeta,
   getDependenciesMeta,
-  requestCoverageMeta,
+  requestNewRatingMeta,
 ].map((m) => m.name);
 
 describe("release fields", () => {

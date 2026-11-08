@@ -204,8 +204,8 @@ export interface DomainBreakdown {
 }
 
 /**
- * A coverage request, as the public contacts endpoint takes it. `request_type`
- * is "rating-request" for coverage: it is the same intent the "Get rated" form
+ * A rating request, as the public contacts endpoint takes it. `request_type`
+ * is "rating-request": it is the same intent the "Get rated" form
  * on verdict.finance submits, so these land in the same queue.
  */
 export interface ContactSubmission {
@@ -299,7 +299,7 @@ export interface VerdictClient {
    * route ask FIRST, so a keyless caller gets an answer instead of a 401.
    */
   hasApiKey(): boolean;
-  /** Submit a coverage request. Anonymous route, IP rate limited. */
+  /** Submit a rating request. Anonymous route, IP rate limited. */
   submitContactRequest(body: ContactSubmission): Promise<ContactReceipt>;
 }
 

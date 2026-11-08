@@ -80,8 +80,8 @@
           "task": "What an entity depends on, what depends on it, and its last five grade moves with their causes"
         },
         {
-          "name": "request_coverage",
-          "task": "Ask Verdict to rate an entity it does not cover yet"
+          "name": "request_new_rating",
+          "task": "Ask Verdict to rate an entity it does not rate yet"
         }
       ],
       "useCases": [

@@ -15,7 +15,7 @@ import { getRecentIncidents, recentIncidentsInput, recentIncidentsMeta } from ".
 import { getMethodology, getMethodologyInput, getMethodologyMeta } from "./tools/methodology.js";
 import { getRatingBreakdown, getRatingBreakdownInput, getRatingBreakdownMeta } from "./tools/breakdown.js";
 import { getDependencies, getDependenciesInput, getDependenciesMeta } from "./tools/dependencies.js";
-import { requestCoverage, requestCoverageInput, requestCoverageMeta } from "./tools/coverage.js";
+import { requestNewRating, requestNewRatingInput, requestNewRatingMeta } from "./tools/new-rating.js";
 import {
   SERVER_DESCRIPTION,
   SERVER_INSTRUCTIONS,
@@ -118,13 +118,13 @@ async function main(): Promise<void> {
   );
 
   server.registerTool(
-    requestCoverageMeta.name,
+    requestNewRatingMeta.name,
     {
-      title: requestCoverageMeta.title,
-      description: requestCoverageMeta.description,
-      inputSchema: requestCoverageInput,
+      title: requestNewRatingMeta.title,
+      description: requestNewRatingMeta.description,
+      inputSchema: requestNewRatingInput,
     },
-    (args) => requestCoverage(client, args),
+    (args) => requestNewRating(client, args),
   );
 
   const transport = new StdioServerTransport();
