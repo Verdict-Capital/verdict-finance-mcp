@@ -1,6 +1,6 @@
 {
   "name": "verdict-finance-mcp",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "mcpName": "io.github.charles-verdict/verdict-finance-mcp",
   "description": "MCP server for Verdict, the security marketplace for DeFi. Keyless access to Verdict's independent ratings (letter grade plus composite score across protocols, chains, tokens, oracles, vaults, organisations and bridges) and what each one depends on, the published methodology, post-quantum readiness for chains, and a live feed of DeFi hack incidents. Set VERDICT_API_KEY for per-domain breakdowns.",
   "type": "module",
