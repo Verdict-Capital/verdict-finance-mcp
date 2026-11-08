@@ -7,13 +7,13 @@
     "url": "https://github.com/Verdict-Capital/verdict-finance-mcp",
     "source": "github"
   },
-  "version": "0.4.0",
+  "version": "0.5.0",
   "websiteUrl": "https://www.verdict.finance",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "verdict-finance-mcp",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "transport": {
         "type": "stdio"
       }
